@@ -8,13 +8,7 @@
 import SwiftUI
 
 class QuestionsViewModel: ObservableObject {
-    @Published var cards: [QuestionCard]
+    @AppStorage("cards") var cards: [QuestionCard] = []
     
-    init(cards: [QuestionCard]) {
-        self.cards = cards
-    }
-}
-
-extension Array: Codable where Element == QuestionCard {
     
 }

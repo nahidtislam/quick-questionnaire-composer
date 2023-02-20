@@ -8,15 +8,15 @@
 import SwiftUI
 
 struct QuestionCard: Identifiable {
-    let id = UUID()
+    var id = UUID()
     
     let title: String
     let subtitle: String?
     
-    let bgColor = Color(uiColor: .systemBackground)
+//    let bgColor = Color(uiColor: .systemBackground)
     
     let possibleAnswers: [Answer]
-    let allCorrectAnswersRequired = false
+    var allCorrectAnswersRequired = false
     
     var correctAnswersCount: Int {
         possibleAnswers.filter { $0.isCorrect }.count
@@ -24,15 +24,26 @@ struct QuestionCard: Identifiable {
     
 }
 
-extension QuestionCard {
-    struct Answer {
-        let id = UUID()
+extension QuestionCard: Codable {
+    struct Answer: Codable {
+        var id = UUID()
         let name: String
         
-        let color: SwiftUI.Color
-        let shape: SwiftUI.Image
+        let style: StyleInfo?
         
         let isCorrect: Bool
+        
+        struct StyleInfo: Codable {
+            let color: String
+            let shape: String
+        }
+        
+        var color: SwiftUI.Color {
+            Color(hex: style?.color ?? "fail it lol") ?? .primary
+        }
+        
+        var shape: SwiftUI.Image { Image(systemName: style?.shape ?? "circle.fill") }
     }
 }
+
 
