@@ -25,13 +25,13 @@ struct QuestionCard: Identifiable {
 }
 
 extension QuestionCard: Codable {
-    struct Answer: Codable {
+    struct Answer: Codable, Identifiable {
         var id = UUID()
-        let name: String
+        var name: String
         
         let style: StyleInfo?
         
-        let isCorrect: Bool
+        var isCorrect: Bool
         
         struct StyleInfo: Codable {
             let color: String
