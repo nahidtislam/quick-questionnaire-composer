@@ -13,17 +13,25 @@ struct AddQuetionsView: View {
     
     @StateObject var vm = ViewModel()
     
-    @State private var b = false
-    
     var body: some View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.titleInput)
-            TextField("description \(vm.possibleAnswers.indices.upperBound)", text: $vm.subtitleInput)
-            Rectangle()
-                .frame(height: 4)
-                .foregroundColor(.init(hex: "#bbeebb"))
-                .padding(.horizontal, -10)
+            TextField("description", text: $vm.subtitleInput)
+            lineSeperator
             answerBox
+            lineSeperator
+            
+            Toggle("all correct answers required to get points for this question", isOn: $vm.allCorrectAnswersRequired)
+            HStack {
+                Text("answers: ")
+                Spacer()
+                Text("\(vm.possibleAnswers.count)")
+            }
+            HStack {
+                Text("correct: ")
+                Spacer()
+                Text("\(vm.possibleAnswers.filter({ $0.isCorrect }).count)")
+            }
             
             HStack(spacing: 40) {
                 Button("cancel") {}
@@ -35,6 +43,13 @@ struct AddQuetionsView: View {
     
     var answerAnimation: Animation {
         .spring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.2)
+    }
+    
+    var lineSeperator: some View {
+        Rectangle()
+            .frame(height: 4)
+            .foregroundColor(.init(hex: "#bbeebb"))
+            .padding(.horizontal, -10)
     }
     
     var answerBox: some View {
