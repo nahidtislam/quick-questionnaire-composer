@@ -1,5 +1,5 @@
 //
-//  QuestionsView.swift
+//  QuestionsListView.swift
 //  quick questionnaire composer
 //
 //  Created by Nahid Islam on 19/02/2023.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct QuestionsView: View {
+struct QuestionsListView: View {
     
     @AppStorage("cards") var cards: [QuestionCard] = []
     
-    var vm = QuestionsViewModel()
+    var vm = QuestionsListViewModel()
     
     var body: some View {
         NavigationStack {
@@ -23,6 +23,7 @@ struct QuestionsView: View {
                     .navigationTitle("questions maker")
                 Button("clear") {
                     vm.cards.removeAll()
+                    vm.editingAt = nil
                 }
             }
         }
@@ -54,7 +55,7 @@ struct QuestionsView: View {
 
 struct QuestionsView_Previews: PreviewProvider {
     static var previews: some View {
-        QuestionsView()
+        QuestionsListView()
     }
     
     static let egQuestions: [QuestionCard] = {

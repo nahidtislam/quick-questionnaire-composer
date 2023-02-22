@@ -11,28 +11,27 @@ struct QuetionsEditorView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
+    @Binding var question: QuestionCard
+    
+    @Namespace var someNS
     @StateObject var vm = ViewModel()
     
     var body: some View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.titleInput)
+                .font(.title)
             TextField("description", text: $vm.subtitleInput)
+                .font(.headline)
             lineSeperator
             answerBox
             lineSeperator
             
             Toggle("all correct answers required to get points for this question", isOn: $vm.allCorrectAnswersRequired)
-            HStack {
-                Text("answers: ")
-                Spacer()
-                Text("\(vm.possibleAnswers.count)")
-            }
-            HStack {
-                Text("correct: ")
-                Spacer()
-                Text("\(vm.possibleAnswers.filter({ $0.isCorrect }).count)")
-            }
-            TextField("marks:", text: $vm.availableMarksInput)
+                .font(.caption)
+            
+            display("answers", value: vm.possibleAnswers.count)
+            display("correct", value: vm.correctAnsCount)
+            marksTextField
             
             HStack(spacing: 40) {
                 Button("cancel") {}
@@ -42,15 +41,36 @@ struct QuetionsEditorView: View {
         }.padding(.horizontal, 35)
     }
     
-    var answerAnimation: Animation {
+    private var answerAnimation: Animation {
         .spring(response: 0.4, dampingFraction: 0.6, blendDuration: 0.2)
     }
     
-    var lineSeperator: some View {
+    private var lineSeperator: some View {
         Rectangle()
             .frame(height: 4)
             .foregroundColor(.init(hex: "#bbeebb"))
             .padding(.horizontal, -10)
+    }
+    
+    private var marksTextField: some View {
+        let placeholderValue = vm.correctAnsCount - 1
+        let placeholder = String(max(0, placeholderValue))
+        
+        
+        return HStack {
+            Text("marks: ")
+            Spacer()
+            TextField(placeholder, text: $vm.availableMarksInput)
+                .multilineTextAlignment(.trailing)
+        }
+    }
+    
+    private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num) -> some View {
+        HStack {
+            Text("\(descripton): ")
+            Spacer()
+            Text(value.description)
+        }
     }
     
     var answerBox: some View {
@@ -92,7 +112,7 @@ struct QuetionsEditorView: View {
 
 struct QuetionsEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        QuetionsEditorView()
+        QuetionsEditorView(question: .constant(QuestionCard(title: "test", possibleAnswers: [])))
     }
 }
 
@@ -109,6 +129,7 @@ extension QuetionsEditorView {
                         .foregroundColor(answer.color)
                         .frame(width: 20, height: 20)
                     TextField("answer name", text: $answer.name)
+                        .font(.title2)
                 }
                 .transition(.move(edge: .bottom))
                 Toggle("is correct", isOn: $answer.isCorrect)
@@ -141,8 +162,12 @@ extension QuetionsEditorView {
             .init(availableMarksInput) ?? -1
         }
         
+        var correctAnsCount: Int {
+            possibleAnswers.filter({ $0.isCorrect }).count
+        }
+        
         var isValid: Bool {
-            possibleAnswers.count > 1 && possibleAnswers.first(where: { $0.isCorrect }) != nil && availableMarksOutput > 0
+            correctAnsCount > 0 && availableMarksOutput > 0
         }
         
         var questionOutput: QuestionCard {

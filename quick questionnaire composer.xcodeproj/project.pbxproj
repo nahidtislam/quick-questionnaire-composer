@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */; };
-		25C88DE629A24E8B0073F412 /* QuestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DE529A24E8B0073F412 /* QuestionsView.swift */; };
+		25C88DE629A24E8B0073F412 /* QuestionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DE529A24E8B0073F412 /* QuestionsListView.swift */; };
 		25C88DE829A24E8D0073F412 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C88DE729A24E8D0073F412 /* Assets.xcassets */; };
 		25C88DEB29A24E8D0073F412 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C88DEA29A24E8D0073F412 /* Preview Assets.xcassets */; };
 		25C88DF229A252930073F412 /* QuestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DF129A252930073F412 /* QuestionCard.swift */; };
-		25C88DF429A2576C0073F412 /* QuestionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DF329A2576C0073F412 /* QuestionsViewModel.swift */; };
+		25C88DF429A2576C0073F412 /* QuestionsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DF329A2576C0073F412 /* QuestionsListViewModel.swift */; };
 		25C88DF629A26E750073F412 /* Array+RawRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DF529A26E750073F412 /* Array+RawRepresentable.swift */; };
 		25C88DF929A27DDC0073F412 /* Color+HexStringInit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DF829A27DDC0073F412 /* Color+HexStringInit.swift */; };
 		25C88DFB29A285080073F412 /* QuetionsEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DFA29A285080073F412 /* QuetionsEditorView.swift */; };
@@ -21,11 +21,11 @@
 /* Begin PBXFileReference section */
 		25C88DE029A24E8B0073F412 /* quick questionnaire composer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "quick questionnaire composer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickQuestionnaireComposerApp.swift; sourceTree = "<group>"; };
-		25C88DE529A24E8B0073F412 /* QuestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsView.swift; sourceTree = "<group>"; };
+		25C88DE529A24E8B0073F412 /* QuestionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsListView.swift; sourceTree = "<group>"; };
 		25C88DE729A24E8D0073F412 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		25C88DEA29A24E8D0073F412 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		25C88DF129A252930073F412 /* QuestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionCard.swift; sourceTree = "<group>"; };
-		25C88DF329A2576C0073F412 /* QuestionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsViewModel.swift; sourceTree = "<group>"; };
+		25C88DF329A2576C0073F412 /* QuestionsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsListViewModel.swift; sourceTree = "<group>"; };
 		25C88DF529A26E750073F412 /* Array+RawRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+RawRepresentable.swift"; sourceTree = "<group>"; };
 		25C88DF829A27DDC0073F412 /* Color+HexStringInit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+HexStringInit.swift"; sourceTree = "<group>"; };
 		25C88DFA29A285080073F412 /* QuetionsEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuetionsEditorView.swift; sourceTree = "<group>"; };
@@ -65,8 +65,8 @@
 			children = (
 				25C88DFA29A285080073F412 /* QuetionsEditorView.swift */,
 				25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */,
-				25C88DE529A24E8B0073F412 /* QuestionsView.swift */,
-				25C88DF329A2576C0073F412 /* QuestionsViewModel.swift */,
+				25C88DE529A24E8B0073F412 /* QuestionsListView.swift */,
+				25C88DF329A2576C0073F412 /* QuestionsListViewModel.swift */,
 				25C88DF129A252930073F412 /* QuestionCard.swift */,
 				25C88DE729A24E8D0073F412 /* Assets.xcassets */,
 				25C88DE929A24E8D0073F412 /* Preview Content */,
@@ -152,10 +152,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				25C88DE629A24E8B0073F412 /* QuestionsView.swift in Sources */,
+				25C88DE629A24E8B0073F412 /* QuestionsListView.swift in Sources */,
 				25C88DF229A252930073F412 /* QuestionCard.swift in Sources */,
 				25C88DFB29A285080073F412 /* QuetionsEditorView.swift in Sources */,
-				25C88DF429A2576C0073F412 /* QuestionsViewModel.swift in Sources */,
+				25C88DF429A2576C0073F412 /* QuestionsListViewModel.swift in Sources */,
 				25C88DF629A26E750073F412 /* Array+RawRepresentable.swift in Sources */,
 				25C88DF929A27DDC0073F412 /* Color+HexStringInit.swift in Sources */,
 				25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */,
