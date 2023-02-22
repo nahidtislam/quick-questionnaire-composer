@@ -14,7 +14,7 @@ class QuestionsListViewModel: ObservableObject {
     @Published var editingAt: Int?
     
     func addQuestion() {
-        let q = QuestionCard(title: "", possibleAnswers: [])
+        let q = QuestionCard(title: "this is a quetion", possibleAnswers: [])
         cards.append(q)
     }
 }

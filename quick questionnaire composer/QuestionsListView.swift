@@ -21,6 +21,9 @@ struct QuestionsListView: View {
             } else {
                 cardList
                     .navigationTitle("questions maker")
+                Button("add") {
+                    vm.addQuestion()
+                }
                 Button("clear") {
                     vm.cards.removeAll()
                     vm.editingAt = nil
@@ -32,7 +35,7 @@ struct QuestionsListView: View {
     var cardList: some View {
         List {
             ForEach(cards) { card in
-                Text(card.title)
+                QuestionView(quetion: card)
             }
         }
     }
