@@ -8,7 +8,11 @@
 import SwiftUI
 
 class QuestionsViewModel: ObservableObject {
+    
     @AppStorage("cards") var cards: [QuestionCard] = []
     
-    
+    func addQuestion() {
+        let q = QuestionCard(title: "", possibleAnswers: [])
+        cards.append(q)
+    }
 }

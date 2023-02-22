@@ -9,6 +9,8 @@ import SwiftUI
 
 struct QuestionsView: View {
     
+    @AppStorage("cards") var cards: [QuestionCard] = []
+    
     var vm = QuestionsViewModel()
     
     var body: some View {
@@ -19,13 +21,16 @@ struct QuestionsView: View {
             } else {
                 cardList
                     .navigationTitle("questions maker")
+                Button("clear") {
+                    vm.cards.removeAll()
+                }
             }
         }
     }
     
     var cardList: some View {
         List {
-            ForEach(vm.cards) { card in
+            ForEach(cards) { card in
                 Text(card.title)
             }
         }
@@ -37,6 +42,7 @@ struct QuestionsView: View {
                 .font(.headline)
             Button {
                 print("clicled")
+                vm.addQuestion()
             } label: {
                 Image(systemName: "plus.square.fill")
                     .font(.system(size: 80))
