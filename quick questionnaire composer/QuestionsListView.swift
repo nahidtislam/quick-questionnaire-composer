@@ -10,17 +10,18 @@ import SwiftUI
 struct QuestionsListView: View {
     
     @AppStorage("cards") var cards: [QuestionCard] = []
+    @State var editingForUUID: UUID?
     
     var vm = QuestionsListViewModel()
     
     var body: some View {
         NavigationStack {
-            if vm.cards.isEmpty {
+            if cards.isEmpty {
                 intro
                     .navigationTitle("welcome")
             } else {
                 cardList
-                    .navigationTitle("questions maker")
+                    .navigationTitle("questions maker \(editingForUUID != nil ? "yes - \(editingForUUID!)" : "no")")
                 Button("add") {
                     vm.addQuestion()
                 }
@@ -33,9 +34,28 @@ struct QuestionsListView: View {
     }
     
     var cardList: some View {
-        List {
+        ScrollView {
             ForEach(cards) { card in
-                QuestionView(quetion: card)
+                if editingForUUID == card.id {
+                    QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!)
+                } else {
+                    QuestionView(quetion: card)
+                        .background(Color(hue: 0.3, saturation: 0.6, brightness: 0.7, opacity: 0.9))
+                        .cornerRadius(26)
+                        .padding(12)
+                        .background(Color(hue: 0.3, saturation: 0.5, brightness: 0.7, opacity: 0.7))
+                        .cornerRadius(30)
+                        .padding(8)
+                        .background(Color(hue: 0.3, saturation: 0.4, brightness: 0.8, opacity: 0.7))
+                        .cornerRadius(30)
+                        .padding(4)
+                        .onTapGesture {
+                            editingForUUID = card.id
+                        }
+                }
+            }
+            .onDelete { indexSet in
+                vm.cards.remove(atOffsets: indexSet)
             }
         }
     }
@@ -45,7 +65,6 @@ struct QuestionsListView: View {
             Text("add card")
                 .font(.headline)
             Button {
-                print("clicled")
                 vm.addQuestion()
             } label: {
                 Image(systemName: "plus.square.fill")

@@ -14,12 +14,12 @@ struct QuestionView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text(quetion.title)
-                .font(.largeTitle)
+                .font(.title)
                 .padding(.horizontal, 10)
             line
             if let desc = quetion.subtitle {
                 Text(desc)
-                    .font(.title)
+                    .font(.title2)
                     .padding(.horizontal, 10)
             }
             HStack {
