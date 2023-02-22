@@ -59,7 +59,7 @@ struct QuestionsView_Previews: PreviewProvider {
         let qaStyle2 = QuestionCard.Answer.StyleInfo(color: "#106600", shape: "square")
         let ans2 = QuestionCard.Answer(name: "answer 2", style: qaStyle1, isCorrect: true)
         
-        QuestionCard(title: "hi", subtitle: "test quetion", possibleAnswers: [ans1, ans2])
+        QuestionCard(title: "hi", subtitle: "test quetion", marks: 1, possibleAnswers: [ans1, ans2])
         
         return output
     }()

@@ -1,5 +1,5 @@
 //
-//  AddQuetionsView.swift
+//  QuetionsEditorView.swift
 //  quick questionnaire composer
 //
 //  Created by Nahid Islam on 19/02/2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct AddQuetionsView: View {
+struct QuetionsEditorView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -32,6 +32,7 @@ struct AddQuetionsView: View {
                 Spacer()
                 Text("\(vm.possibleAnswers.filter({ $0.isCorrect }).count)")
             }
+            TextField("marks:", text: $vm.availableMarksInput)
             
             HStack(spacing: 40) {
                 Button("cancel") {}
@@ -89,13 +90,13 @@ struct AddQuetionsView: View {
     }
 }
 
-struct AddQuetionsView_Previews: PreviewProvider {
+struct QuetionsEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        AddQuetionsView()
+        QuetionsEditorView()
     }
 }
 
-extension AddQuetionsView {
+extension QuetionsEditorView {
     struct AnswerEditor: View {
         
         @Binding var answer: QuestionCard.Answer
@@ -118,11 +119,13 @@ extension AddQuetionsView {
     class ViewModel: ObservableObject {
         let questionUUID = UUID()
         
-        var titleInput = ""
-        var subtitleInput = ""
+        @Published var titleInput = ""
+        @Published var subtitleInput = ""
         
-        var subtitleIsEnabled = false
-        var allCorrectAnswersRequired = false
+        @Published var availableMarksInput = ""
+        
+        @Published var subtitleIsEnabled = false
+        @Published var allCorrectAnswersRequired = false
         
         @Published var possibleAnswers = [QuestionCard.Answer]()
         
@@ -134,8 +137,12 @@ extension AddQuetionsView {
             }
         }
         
+        var availableMarksOutput: Double {
+            .init(availableMarksInput) ?? -1
+        }
+        
         var isValid: Bool {
-            possibleAnswers.count > 1 && possibleAnswers.first(where: { $0.isCorrect }) != nil
+            possibleAnswers.count > 1 && possibleAnswers.first(where: { $0.isCorrect }) != nil && availableMarksOutput > 0
         }
         
         var questionOutput: QuestionCard {
@@ -143,6 +150,7 @@ extension AddQuetionsView {
                 id: questionUUID,
                 title: titleInput,
                 subtitle: subtitleOutput,
+                marks: availableMarksOutput,
                 possibleAnswers: possibleAnswers,
                 allCorrectAnswersRequired: allCorrectAnswersRequired
             )

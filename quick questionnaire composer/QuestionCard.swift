@@ -13,6 +13,8 @@ struct QuestionCard: Identifiable {
     let title: String
     let subtitle: String?
     
+    let marks: Double
+    
 //    let bgColor = Color(uiColor: .systemBackground)
     
     let possibleAnswers: [Answer]
@@ -43,6 +45,16 @@ extension QuestionCard: Codable {
         }
         
         var shape: SwiftUI.Image { Image(systemName: style?.shape ?? "circle.fill") }
+    }
+    
+    init(title: String, subtitle: String? = nil, possibleAnswers: [Answer], allCorrectAnswersRequired: Bool = false) {
+        self.id = UUID()
+        
+        self.title = title
+        self.subtitle = subtitle
+        self.marks = Double(possibleAnswers.count - 1)
+        self.possibleAnswers = possibleAnswers
+        self.allCorrectAnswersRequired = allCorrectAnswersRequired
     }
 }
 
