@@ -66,13 +66,17 @@ struct AddQuetionsView: View {
 //                    .padding(.top, 6)
 //            }
             ScrollView {
-                ForEach($vm.possibleAnswers) { i in
-                    answer(item: i)
-                        .id(i.id)
+                ForEach($vm.possibleAnswers) { item in
+                    AnswerEditor(answer: item)
+                        .id(item.id)
+                        .padding(8)
+                        .background(Color(hex: "#99EEBB"))
+                        .cornerRadius(6)
+                        .padding(2)
                 }
             }
             .frame(height: 88 * CGFloat(min(4, vm.possibleAnswers.count)))
-            Button("delte answer") {
+            Button("delete answer") {
                 withAnimation(answerAnimation) {
                     _ = vm.possibleAnswers.removeLast()
                 }
@@ -83,25 +87,6 @@ struct AddQuetionsView: View {
         .background(Color(hex: "#A9DFFF"))
         .cornerRadius(20)
     }
-    
-    func answer(item: Binding<QuestionCard.Answer>) -> some View {
-        VStack {
-            HStack {
-                item.wrappedValue.shape
-                    .resizable()
-                    .foregroundColor(item.wrappedValue.color)
-                    .frame(width: 20, height: 20)
-                TextField("answer name", text: item.name)
-            }
-            .transition(.move(edge: .bottom))
-            Toggle("is correct", isOn: item.isCorrect)
-        }
-        .padding(8)
-        .background(Color(hex: "#99EEBB"))
-        .cornerRadius(6)
-        .padding(2)
-        
-    }
 }
 
 struct AddQuetionsView_Previews: PreviewProvider {
@@ -111,6 +96,25 @@ struct AddQuetionsView_Previews: PreviewProvider {
 }
 
 extension AddQuetionsView {
+    struct AnswerEditor: View {
+        
+        @Binding var answer: QuestionCard.Answer
+        
+        var body: some View {
+            VStack {
+                HStack {
+                    answer.shape
+                        .resizable()
+                        .foregroundColor(answer.color)
+                        .frame(width: 20, height: 20)
+                    TextField("answer name", text: $answer.name)
+                }
+                .transition(.move(edge: .bottom))
+                Toggle("is correct", isOn: $answer.isCorrect)
+            }
+        }
+    }
+    
     class ViewModel: ObservableObject {
         let questionUUID = UUID()
         
