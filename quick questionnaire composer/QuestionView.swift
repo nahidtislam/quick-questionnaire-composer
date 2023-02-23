@@ -11,6 +11,8 @@ struct QuestionView: View {
     
     var quetion: QuestionCard
     
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         VStack(alignment: .leading) {
             Text(quetion.title)
@@ -36,11 +38,30 @@ struct QuestionView: View {
             }
         }
         .padding()
+        .background(bg)
+        .cornerRadius(16)
+        .padding(12)
+//        .background(bg.saturation(0.8).brightness(0.1))
+        .background(bg.opacity(0.75))
+        .cornerRadius(20)
+        .padding(8)
+//        .background(bg.saturation(0.6).brightness(0.2))
+        .background(bg.opacity(0.5))
+        .cornerRadius(24)
     }
     
     var line: some View {
         Rectangle()
             .frame(height: 3)
+    }
+    
+    var bg: Color {
+//        return .blue
+        if let savedColor = Color(hex: quetion.bgColorHex ?? "fail it") {
+            return savedColor
+        } else {
+            return colorScheme == .dark ? Color(hex: "#1E1E1E")! : Color(hex: "#EEEEEE")!
+        }
     }
 }
 
