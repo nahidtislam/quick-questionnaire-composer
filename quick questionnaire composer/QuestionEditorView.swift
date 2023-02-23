@@ -1,5 +1,5 @@
 //
-//  QuetionsEditorView.swift
+//  QuestionEditorView.swift
 //  quick questionnaire composer
 //
 //  Created by Nahid Islam on 19/02/2023.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct QuetionsEditorView: View {
+struct QuestionEditorView: View {
     
     @Environment(\.presentationMode) var presentationMode
     
@@ -20,8 +20,12 @@ struct QuetionsEditorView: View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.titleInput)
                 .font(.title)
-            TextField("description", text: $vm.subtitleInput)
-                .font(.headline)
+            HStack {
+                TextField("description", text: $vm.subtitleInput)
+                    .disabled(!vm.subtitleIsEnabled)
+                    .font(.headline)
+                Toggle("", isOn: $vm.subtitleIsEnabled)
+            }
             lineSeperator
             answerBox
             lineSeperator
@@ -35,8 +39,10 @@ struct QuetionsEditorView: View {
             
             HStack(spacing: 40) {
                 Button("cancel") {}
-                Button("add") {}
-                    .disabled(!vm.isValid)
+                Button("add") {
+                    question = vm.questionOutput
+                }
+                .disabled(!vm.isValid)
             }
         }.padding(.horizontal, 35)
     }
@@ -53,14 +59,10 @@ struct QuetionsEditorView: View {
     }
     
     private var marksTextField: some View {
-        let placeholderValue = vm.correctAnsCount - 1
-        let placeholder = String(max(0, placeholderValue))
-        
-        
-        return HStack {
+        HStack {
             Text("marks: ")
             Spacer()
-            TextField(placeholder, text: $vm.availableMarksInput)
+            TextField("\(vm.correctAnsCount)", text: $vm.availableMarksInput)
                 .multilineTextAlignment(.trailing)
         }
     }
@@ -81,11 +83,6 @@ struct QuetionsEditorView: View {
                     vm.possibleAnswers.append(ans)
                 }
             }
-//            if vm.possibleAnswers.count == 0 {
-//                Text("your answers are empty")
-//                    .padding(.horizontal, 20)
-//                    .padding(.top, 6)
-//            }
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
                     AnswerEditor(answer: item)
@@ -112,11 +109,11 @@ struct QuetionsEditorView: View {
 
 struct QuetionsEditorView_Previews: PreviewProvider {
     static var previews: some View {
-        QuetionsEditorView(question: .constant(QuestionCard(title: "test", possibleAnswers: [])))
+        QuestionEditorView(question: .constant(QuestionCard(title: "test", possibleAnswers: [])))
     }
 }
 
-extension QuetionsEditorView {
+extension QuestionEditorView {
     struct AnswerEditor: View {
         
         @Binding var answer: QuestionCard.Answer
