@@ -45,6 +45,20 @@ struct QuestionEditorView: View {
                 .disabled(!vm.isValid)
             }
         }.padding(.horizontal, 35)
+            .onAppear {
+                vm.titleInput = question.title
+                if let descprition = question.subtitle {
+                    vm.subtitleIsEnabled = true
+                    vm.subtitleInput = descprition
+                }
+                if question.marks > 0 {
+                    vm.availableMarksInput = "\(question.marks)"
+                    
+                }
+                vm.possibleAnswers = question.possibleAnswers
+                vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
+//                vm.questionUUID = question.id
+            }
     }
     
     private var answerAnimation: Animation {
