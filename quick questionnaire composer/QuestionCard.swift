@@ -57,6 +57,19 @@ extension QuestionCard: Codable {
         self.possibleAnswers = possibleAnswers
         self.allCorrectAnswersRequired = allCorrectAnswersRequired
     }
+    
+    enum FieldIdentifier {
+        case title, subtitle, marks, bgColor, allCorrectAnswersRequired
+        
+        func namespace(question: QuestionCard) -> String {
+            "q_card-\(question.id):\(self)"
+        }
+    }
+    
+    public func generateNamespace(for field: FieldIdentifier, tag: String? = nil) -> String {
+        field.namespace(question: self) +
+            (tag != nil ? "(\(tag!.replacingOccurrences(of: " ", with: "_")))" : "")
+    }
 }
 
 

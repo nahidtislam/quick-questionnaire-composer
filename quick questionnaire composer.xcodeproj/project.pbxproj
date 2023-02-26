@@ -65,8 +65,8 @@
 		25C88DE229A24E8B0073F412 /* quick questionnaire composer */ = {
 			isa = PBXGroup;
 			children = (
-				25C88DFA29A285080073F412 /* QuestionEditorView.swift */,
 				25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */,
+				25C88DFA29A285080073F412 /* QuestionEditorView.swift */,
 				25C88DE529A24E8B0073F412 /* QuestionsListView.swift */,
 				25C88DF329A2576C0073F412 /* QuestionsListViewModel.swift */,
 				25C88DFC29A679EE0073F412 /* QuestionView.swift */,

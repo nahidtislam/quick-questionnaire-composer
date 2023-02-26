@@ -12,6 +12,8 @@ struct QuestionsListView: View {
     @AppStorage("cards") var cards: [QuestionCard] = []
     @State var editingForUUID: UUID?
     
+    @Namespace var someNamespace
+    
     var vm = QuestionsListViewModel()
     
     var body: some View {
@@ -37,25 +39,24 @@ struct QuestionsListView: View {
         ScrollView {
             ForEach(cards) { card in
                 if editingForUUID == card.id {
-                    QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!)
+                    QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
+                        .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
                 } else {
-                    QuestionView(quetion: card)
-                        .background(Color(hue: 0.3, saturation: 0.6, brightness: 0.7, opacity: 0.9))
-                        .cornerRadius(26)
-                        .padding(12)
-                        .background(Color(hue: 0.3, saturation: 0.5, brightness: 0.7, opacity: 0.7))
-                        .cornerRadius(30)
+                    QuestionView(question: card, qSpace: someNamespace)
                         .padding(8)
-                        .background(Color(hue: 0.3, saturation: 0.4, brightness: 0.8, opacity: 0.7))
-                        .cornerRadius(30)
-                        .padding(4)
+                        .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
                         .onTapGesture {
-                            editingForUUID = card.id
+                            withAnimation(.spring()) {
+                                editingForUUID = card.id
+                            }
                         }
                 }
             }
             .onDelete { indexSet in
                 vm.cards.remove(atOffsets: indexSet)
+//                if vm.cards[indexSet].contains(where: { $0.id == editingForUUID }) {
+//                    editingForUUID = nil
+//                }
             }
         }
     }

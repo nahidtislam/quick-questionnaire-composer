@@ -9,32 +9,45 @@ import SwiftUI
 
 struct QuestionView: View {
     
-    var quetion: QuestionCard
+    var question: QuestionCard
+    
+    var qSpace: Namespace.ID
+    
+    @State var isEditing = false
+    
+    static func defaultBG(scheme colorScheme: ColorScheme) -> Color {
+        colorScheme == .dark ? Color(hex: "#1E1E1E")! : Color(hex: "#EEEEEE")!
+    }
     
     @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text(quetion.title)
+            Text(question.title)
+                .matchedGeometryEffect(id: question.generateNamespace(for: .title), in: qSpace)
                 .font(.title)
                 .padding(.horizontal, 10)
             line
-            if let desc = quetion.subtitle {
+            if let desc = question.subtitle {
                 Text(desc)
+                    .matchedGeometryEffect(id: question.generateNamespace(for: .subtitle), in: qSpace)
                     .font(.title2)
                     .padding(.horizontal, 10)
             }
             HStack {
                 Text("possible answers: ")
+                    .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
                 Spacer()
-                Text("\(quetion.possibleAnswers.count)")
+                Text("\(question.possibleAnswers.count)")
+                    .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(value)", in: qSpace)
             }
-            if quetion.possibleAnswers.count > 2 {
+            if question.possibleAnswers.count > 2 {
                 HStack {
                     Text("all answers required: ")
                     Spacer()
-                    Text("\(quetion.allCorrectAnswersRequired ? "yes" : "no")")
+                    Text("\(question.allCorrectAnswersRequired ? "yes" : "no")")
                 }
+                .matchedGeometryEffect(id: "q_card-\(question.id):all_answers_needed", in: qSpace)
             }
         }
         .padding()
@@ -57,16 +70,23 @@ struct QuestionView: View {
     
     var bg: Color {
 //        return .blue
-        if let savedColor = Color(hex: quetion.bgColorHex ?? "fail it") {
+        if let savedColor = Color(hex: question.bgColorHex ?? "fail it") {
             return savedColor
         } else {
-            return colorScheme == .dark ? Color(hex: "#1E1E1E")! : Color(hex: "#EEEEEE")!
+            return QuestionView.defaultBG(scheme: colorScheme)
         }
+    }
+    
+    private func makeNamespace(for field: QuestionCard.FieldIdentifier) -> String {
+        //TODO: make this a protocol
+        field.namespace(question: question)
     }
 }
 
 struct QuestionView_Previews: PreviewProvider {
+    @Namespace static var previewNamespace
+    
     static var previews: some View {
-        QuestionView(quetion: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [], allCorrectAnswersRequired: true))
+        QuestionView(question: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [], allCorrectAnswersRequired: true), qSpace: previewNamespace)
     }
 }
