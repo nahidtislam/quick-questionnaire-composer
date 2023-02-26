@@ -41,15 +41,19 @@ struct QuestionsListView: View {
                 if editingForUUID == card.id {
                     QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
                         .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
+                        .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
+                        .padding(12)
                 } else {
                     QuestionView(question: card, qSpace: someNamespace)
-                        .padding(8)
                         .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
+                        .padding(8)
                         .onTapGesture {
                             withAnimation(.spring()) {
                                 editingForUUID = card.id
                             }
                         }
+                        .transition(.push(from: .top))
+                        .scaleEffect(x: editingForUUID == nil ? 1 : 0.95, y: editingForUUID == nil ? 1 : 0.95)
                 }
             }
             .onDelete { indexSet in

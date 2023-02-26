@@ -31,6 +31,7 @@ struct QuestionEditorView: View {
             }
             lineSeperator
             answerBox
+                .transition(.push(from: .top))
             lineSeperator
             
             Toggle("all correct answers required to get points for this question", isOn: $vm.allCorrectAnswersRequired)
@@ -121,7 +122,8 @@ struct QuestionEditorView: View {
                     AnswerEditor(answer: item)
                         .id(item.id)
                         .padding(8)
-                        .background(Color(hex: item.wrappedValue.style?.color ?? "") ?? defaultColorForAnswerBox)
+                        .background(Color(hex: item.wrappedValue.style?.color ?? "") ?? (item.wrappedValue.isCorrect ? defaultCorrectColorAnswer : defaultIncorrectColorForAnswer))
+                        .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
                         .cornerRadius(6)
                         .padding(2)
                 }
@@ -139,12 +141,16 @@ struct QuestionEditorView: View {
         .cornerRadius(20)
     }
     
-    var answerContainerColor: Color? {
-        colorScheme == .dark ? Color(hex: "#224477") : Color(hex: "#A9DFFF")!
+    private var answerContainerColor: Color? {
+        colorScheme == .dark ? Color(hex: "#224477") : Color(hex: "#A9DFFF")
     }
     
-    var defaultColorForAnswerBox: Color? {
+    private var defaultCorrectColorAnswer: Color? {
         colorScheme == .dark ? Color(hex: "#228A44") : Color(hex: "#99EEBB")
+    }
+    
+    private var defaultIncorrectColorForAnswer: Color? {
+        colorScheme == .dark ? Color(hex: "#AA1F1A") : Color(hex: "#FAAAB5")
     }
 }
 
