@@ -163,26 +163,6 @@ struct QuetionsEditorView_Previews: PreviewProvider {
 }
 
 extension QuestionEditorView {
-    struct AnswerEditor: View {
-        
-        @Binding var answer: QuestionCard.Answer
-        
-        var body: some View {
-            VStack {
-                HStack {
-                    answer.shape
-                        .resizable()
-                        .foregroundColor(answer.color)
-                        .frame(width: 20, height: 20)
-                    TextField("answer name", text: $answer.name)
-                        .font(.title2)
-                }
-                .transition(.move(edge: .bottom))
-                Toggle("is correct", isOn: $answer.isCorrect)
-            }
-        }
-    }
-    
     class ViewModel: ObservableObject {
         var questionUUID = UUID()
         

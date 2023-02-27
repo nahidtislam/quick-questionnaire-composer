@@ -53,7 +53,7 @@ struct QuestionsListView: View {
                             }
                         }
                         .transition(.push(from: .top))
-                        .scaleEffect(x: editingForUUID == nil ? 1 : 0.95, y: editingForUUID == nil ? 1 : 0.95)
+//                        .scaleEffect(x: editingForUUID == nil ? 1 : 0.95, y: editingForUUID == nil ? 1 : 0.95)
                 }
             }
             .onDelete { indexSet in
