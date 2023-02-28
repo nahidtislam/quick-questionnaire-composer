@@ -10,7 +10,13 @@ import SwiftUI
 struct AnswerEditor: View {
     
     @Binding var answer: QuestionCard.Answer
+    @State var isStyling = false
+    @State var customColor = Color.clear.cgColor!
+    @State var customShape = ""
+    
     @Environment(\.colorScheme) var colorScheme
+    
+    var uniPadding: CGFloat = 0
     
     var body: some View {
         VStack {
@@ -21,11 +27,38 @@ struct AnswerEditor: View {
                     .frame(width: 20, height: 20)
                 TextField("answer name", text: $answer.name)
                     .font(.title2)
+                Button {
+                    withAnimation(.interactiveSpring()) {
+                        isStyling.toggle()
+                    }
+                } label: {
+                    Image(systemName: isStyling ? "chevron.down.circle.fill" : "chevron.right.square")
+                        .resizable()
+                        .frame(width: 18, height: 18)
+                }
+
             }
             .transition(.move(edge: .bottom))
             Toggle("is correct", isOn: $answer.isCorrect)
+            
+            if isStyling {
+                ColorPicker("color", selection: $customColor)
+                TextField("glyth", text: $customShape)
+            }
         }
-        .background(AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme))
+        .padding(uniPadding)
+        .background(bg)
+    }
+    
+    var bg: Color {
+        Color(hex: answer.style?.color ?? "") ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
+    }
+    
+    public func padding(_ value: CGFloat) -> Self {
+        var new = self
+        new.uniPadding = value
+        
+        return new
     }
     
     static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
@@ -45,7 +78,9 @@ struct AnswerEditor: View {
 struct AnswerEditor_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            AnswerEditor(answer: .constant(.init(name: "answer title", style: nil, isCorrect: true)))
+            AnswerEditor(answer: .constant(.init(name: "default correct", style: nil, isCorrect: true)))
+            AnswerEditor(answer: .constant(.init(name: "default incorrect", style: nil, isCorrect: false)))
+            AnswerEditor(answer: .constant(.init(name: "styled", style: .init(color: "#3388ee", shape: "circle"), isCorrect: false)))
         }
         .padding(20)
     }

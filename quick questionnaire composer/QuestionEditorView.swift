@@ -120,12 +120,16 @@ struct QuestionEditorView: View {
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
                     AnswerEditor(answer: item)
-                        .id(item.id)
                         .padding(8)
-                        .background(Color(hex: item.wrappedValue.style?.color ?? "") ?? (item.wrappedValue.isCorrect ? defaultCorrectColorAnswer : defaultIncorrectColorForAnswer))
+                        .id(item.id)
                         .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
                         .cornerRadius(6)
-                        .padding(2)
+                }
+                .onDelete { i in
+                    vm.possibleAnswers.remove(atOffsets: i)
+                }
+                .onMove { i, target in
+                    vm.possibleAnswers.move(fromOffsets: i, toOffset: target)
                 }
             }
             .frame(height: 88 * CGFloat(min(4, vm.possibleAnswers.count)))
@@ -144,21 +148,21 @@ struct QuestionEditorView: View {
     private var answerContainerColor: Color? {
         colorScheme == .dark ? Color(hex: "#224477") : Color(hex: "#A9DFFF")
     }
-    
-    private var defaultCorrectColorAnswer: Color? {
-        colorScheme == .dark ? Color(hex: "#228A44") : Color(hex: "#99EEBB")
-    }
-    
-    private var defaultIncorrectColorForAnswer: Color? {
-        colorScheme == .dark ? Color(hex: "#AA1F1A") : Color(hex: "#FAAAB5")
-    }
 }
 
 struct QuetionsEditorView_Previews: PreviewProvider {
     @Namespace static var previewNamespace
     
+    static var egAnswers: [QuestionCard.Answer] = [
+        .init(name: "placeholder correct", style: nil, isCorrect: true),
+        .init(name: "placeholder incorrect", style: nil, isCorrect: false),
+        .init(name: "styled blueish", style: .init(color: "#11AAFF", shape: "01.square.fill"), isCorrect: false),
+        .init(name: "styled marroon", style: .init(color: "#BB4588", shape: "aqi.medium"), isCorrect: true),
+        .init(name: "lime???", style: .init(color: "#00EE82", shape: "allergens"), isCorrect: true)
+    ]
+    
     static var previews: some View {
-        QuestionEditorView(question: .constant(QuestionCard(title: "test", possibleAnswers: [])), qSpace: previewNamespace)
+        QuestionEditorView(question: .constant(QuestionCard(title: "test", possibleAnswers: Self.egAnswers)), qSpace: previewNamespace)
     }
 }
 
