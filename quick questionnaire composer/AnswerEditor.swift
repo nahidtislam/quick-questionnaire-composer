@@ -11,12 +11,13 @@ struct AnswerEditor: View {
     
     @Binding var answer: QuestionCard.Answer
     @State var isStyling = false
-    @State var customColor = Color.clear.cgColor!
+    @State var customColor = Color.clear
     @State var customShape = ""
     
     @Environment(\.colorScheme) var colorScheme
     
     var uniPadding: CGFloat = 0
+    var styleTransition: Animation = .interactiveSpring()
     
     var body: some View {
         VStack {
@@ -28,7 +29,7 @@ struct AnswerEditor: View {
                 TextField("answer name", text: $answer.name)
                     .font(.title2)
                 Button {
-                    withAnimation(.interactiveSpring()) {
+                    withAnimation(styleTransition) {
                         isStyling.toggle()
                     }
                 } label: {
@@ -42,21 +43,67 @@ struct AnswerEditor: View {
             Toggle("is correct", isOn: $answer.isCorrect)
             
             if isStyling {
-                ColorPicker("color", selection: $customColor)
+                HStack {
+                    ColorPicker("answer color", selection: $customColor, supportsOpacity: false)
+                    if customColor != .clear {
+                        Button {
+                            withAnimation { customColor = .clear }
+                        } label: {
+                            Image(systemName: "clear.fill")
+                        }
+
+                    }
+                }
                 TextField("glyth", text: $customShape)
             }
         }
         .padding(uniPadding)
         .background(bg)
+        .onAppear {
+            loadStyles()
+        }
     }
     
     var bg: Color {
         Color(hex: answer.style?.color ?? "") ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
     }
     
+    private func loadStyles() {
+        if let style = answer.style {
+            customShape = style.shape
+            customColor = Color(hex: style.color)!
+        }
+    }
+    
+    private func addToStyle() {
+        let colorHex: String? = {
+            guard let colorComp = customColor.cgColor?.components else { return nil }
+            let colorR = colorComp[0]
+            let colorG = colorComp[1]
+            let colorB = colorComp[2]
+            return String(format:"#%02X%02X%02X", colorR, colorG, colorB)
+        }()
+        
+        guard let colorHex, customShape != "" else { return }
+        
+        let style = QuestionCard.Answer.StyleInfo(color: colorHex, shape: customShape)
+        
+        answer = QuestionCard.Answer(id: answer.id,
+                            name: answer.name,
+                            style: style,
+                            isCorrect: answer.isCorrect)
+    }
+    
     public func padding(_ value: CGFloat) -> Self {
         var new = self
         new.uniPadding = value
+        
+        return new
+    }
+    
+    public func styleTransition(_ value: Animation) -> Self {
+        var new = self
+        new.styleTransition = value
         
         return new
     }

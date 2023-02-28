@@ -96,6 +96,8 @@ struct QuestionEditorView: View {
         }
     }
     
+    
+    
     private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num) -> some View {
         HStack {
             Text("\(descripton): ")
@@ -121,6 +123,7 @@ struct QuestionEditorView: View {
                 ForEach($vm.possibleAnswers) { item in
                     AnswerEditor(answer: item)
                         .padding(8)
+                        .styleTransition(.spring(response: 0.3, dampingFraction: 0.4, blendDuration: 0.3))
                         .id(item.id)
                         .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
                         .cornerRadius(6)
