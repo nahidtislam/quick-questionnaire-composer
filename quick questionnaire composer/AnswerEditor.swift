@@ -61,6 +61,13 @@ struct AnswerEditor: View {
         .background(bg)
         .onAppear {
             loadStyles()
+        }.onChange(of: customShape) { newValue in
+            addToStyle()
+//            loadStyles()
+        }
+        .onChange(of: customColor) { newValue in
+            addToStyle()
+//            loadStyles()
         }
     }
     
@@ -78,10 +85,11 @@ struct AnswerEditor: View {
     private func addToStyle() {
         let colorHex: String? = {
             guard let colorComp = customColor.cgColor?.components else { return nil }
-            let colorR = colorComp[0]
-            let colorG = colorComp[1]
-            let colorB = colorComp[2]
-            return String(format:"#%02X%02X%02X", colorR, colorG, colorB)
+            let colorR = Int(colorComp[0] * 256)
+            let colorG = Int(colorComp[1] * 256)
+            let colorB = Int(colorComp[2] * 256)
+            
+            return String(format:"#%02x%02x%02x", colorR, colorG, colorB)
         }()
         
         guard let colorHex, customShape != "" else { return }
