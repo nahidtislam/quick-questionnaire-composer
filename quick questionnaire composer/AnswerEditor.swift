@@ -24,7 +24,6 @@ struct AnswerEditor: View {
             HStack {
                 answer.shape
                     .resizable()
-                    .foregroundColor(answer.color)
                     .frame(width: 20, height: 20)
                 TextField("answer name", text: $answer.name)
                     .font(.title2)
