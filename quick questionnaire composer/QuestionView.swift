@@ -16,7 +16,7 @@ struct QuestionView: View {
     @State var isEditing = false
     
     static func defaultBG(scheme colorScheme: ColorScheme) -> Color {
-        colorScheme == .dark ? Color(hex: "#1E1E1E")! : Color(hex: "#EEEEEE")!
+        colorScheme == .dark ? Color(hex: "#1E1E1E", colorSpace: .displayP3)! : Color(hex: "#EEEEEE", colorSpace: .displayP3)!
     }
     
     @Environment(\.colorScheme) var colorScheme
@@ -70,7 +70,7 @@ struct QuestionView: View {
     
     var bg: Color {
 //        return .blue
-        if let savedColor = Color(hex: question.bgColorHex ?? "fail it") {
+        if let savedColor = Color(hex: question.bgColorHex ?? "fail it", colorSpace: .displayP3) {
             return savedColor
         } else {
             return QuestionView.defaultBG(scheme: colorScheme)

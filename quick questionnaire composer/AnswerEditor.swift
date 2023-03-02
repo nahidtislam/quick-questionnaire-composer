@@ -71,19 +71,20 @@ struct AnswerEditor: View {
     }
     
     var bg: Color {
-        Color(hex: answer.style?.color ?? "") ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
+        Color(hex: answer.style?.color ?? "", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
     }
     
     private func loadStyles() {
         if let style = answer.style {
             customShape = style.shape
-            customColor = Color(hex: style.color)!
+            customColor = Color(hex: style.color, colorSpace: .displayP3)!
         }
     }
     
     private func addToStyle() {
         let colorHex: String? = {
             guard let colorComp = customColor.cgColor?.components else { return nil }
+            guard customColor != .clear else { return nil }
             let colorR = Int(colorComp[0] * 256)
             let colorG = Int(colorComp[1] * 256)
             let colorB = Int(colorComp[2] * 256)
@@ -91,14 +92,11 @@ struct AnswerEditor: View {
             return String(format:"#%02x%02x%02x", colorR, colorG, colorB)
         }()
         
-        guard let colorHex, customShape != "" else { return }
+        guard let colorHex, customShape != "" else { removeStyle(); return }
         
         let style = QuestionCard.Answer.StyleInfo(color: colorHex, shape: customShape)
         
-        answer = QuestionCard.Answer(id: answer.id,
-                            name: answer.name,
-                            style: style,
-                            isCorrect: answer.isCorrect)
+        setStyle(style)
     }
     
     public func padding(_ value: CGFloat) -> Self {
@@ -115,12 +113,26 @@ struct AnswerEditor: View {
         return new
     }
     
+    private func setStyle(_ style: QuestionCard.Answer.StyleInfo) {
+        answer = QuestionCard.Answer(id: answer.id,
+                            name: answer.name,
+                            style: style,
+                            isCorrect: answer.isCorrect)
+    }
+    
+    private func removeStyle() {
+        answer = QuestionCard.Answer(id: answer.id,
+                            name: answer.name,
+                            style: nil,
+                            isCorrect: answer.isCorrect)
+    }
+    
     static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
         switch colorScheme {
         case .dark:
-            return correct ? Color(hex: "#228A44")! : Color(hex: "#AA1F1A")!
+            return correct ? Color(hex: "#228A44", colorSpace: .displayP3)! : Color(hex: "#AA1F1A", colorSpace: .displayP3)!
         case .light:
-            return correct ? Color(hex: "#99EEBB")! : Color(hex: "#FAAAB5")!
+            return correct ? Color(hex: "#99EEBB", colorSpace: .displayP3)! : Color(hex: "#FAAAB5", colorSpace: .displayP3)!
         @unknown default:
             fatalError("new color dropped")
         }

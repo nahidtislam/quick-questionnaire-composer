@@ -73,7 +73,7 @@ struct QuestionEditorView: View {
     }
     
     private var bg: Color {
-        Color(hex: question.bgColorHex ?? "") ?? QuestionView.defaultBG(scheme: colorScheme)
+        Color(hex: question.bgColorHex ?? "", colorSpace: .displayP3) ?? QuestionView.defaultBG(scheme: colorScheme)
     }
     
     private var answerAnimation: Animation {
@@ -149,7 +149,7 @@ struct QuestionEditorView: View {
     }
     
     private var answerContainerColor: Color? {
-        colorScheme == .dark ? Color(hex: "#224477") : Color(hex: "#A9DFFF")
+        colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#A9DFFF", colorSpace: .displayP3)
     }
 }
 

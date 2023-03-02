@@ -41,7 +41,7 @@ extension QuestionCard: Codable {
         }
         
         var color: SwiftUI.Color {
-            Color(hex: style?.color ?? "fail it lol") ?? .primary
+            Color(hex: style?.color ?? "fail it lol", colorSpace: .displayP3) ?? .primary
         }
         
         var shape: SwiftUI.Image { Image(systemName: style?.shape ?? "circle.fill") }

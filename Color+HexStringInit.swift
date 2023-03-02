@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Color {
-    init?(hex: String) {
+    init?(hex: String, colorSpace: RGBColorSpace = .sRGB) {
         let input =  hex.trimmingCharacters(in: .whitespaces)
         guard input.first == "#" && input.count == 7 else { return nil }
         
@@ -36,6 +36,6 @@ extension Color {
         let gValue = floatThe(string: gHex)
         let bValue = floatThe(string: bHex)
         
-        self.init(red: rValue, green: gValue, blue: bValue)
+        self.init(colorSpace, red: rValue, green: gValue, blue: bValue)
     }
 }
