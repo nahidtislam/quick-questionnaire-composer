@@ -85,9 +85,9 @@ struct AnswerEditor: View {
         let colorHex: String? = {
             guard let colorComp = customColor.cgColor?.components else { return nil }
             guard customColor != .clear else { return nil }
-            let colorR = Int(colorComp[0] * 256)
-            let colorG = Int(colorComp[1] * 256)
-            let colorB = Int(colorComp[2] * 256)
+            let colorR = Int(colorComp[0] * 255)
+            let colorG = Int(colorComp[1] * 255)
+            let colorB = Int(colorComp[2] * 255)
             
             return String(format:"#%02x%02x%02x", colorR, colorG, colorB)
         }()
