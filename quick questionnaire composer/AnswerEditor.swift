@@ -11,8 +11,10 @@ struct AnswerEditor: View {
     
     @Binding var answer: QuestionCard.Answer
     @State var isStyling = false
+    
     @State var customColor = Color.clear
     @State var customShape = ""
+    @State var answerScheme: ColorScheme? = nil
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -43,20 +45,48 @@ struct AnswerEditor: View {
             
             if isStyling {
                 HStack {
-                    ColorPicker("answer color", selection: $customColor, supportsOpacity: false)
                     if customColor != .clear {
                         Button {
                             withAnimation { customColor = .clear }
                         } label: {
-                            Image(systemName: "clear.fill")
+//                            Image(systemName: "clear.fill")
+                            Text("clear")
+                                .font(.footnote.weight(.bold).width(.condensed))
+                                .padding(.horizontal, 4)
+                                .foregroundColor(.white)
+                                .background(Color.accentColor)
+                                .cornerRadius(8)
+                                .padding(.trailing, -6)
                         }
-
                     }
+                    ColorPicker(selection: $customColor, supportsOpacity: false) {
+                        ZStack{
+                            // this is displayed to the actual picker
+                            Text(answer.name)
+                                .frame(width: 0, height: 0)
+                                .opacity(0)
+                                .foregroundColor(.clear)
+                            // shown to user before invoking picker
+                            Text("answer background color")
+                                .font(.subheadline.width(.condensed))
+                        }
+                    }
+                    Picker("content accent", selection: $answerScheme) {
+                        Text("dark")
+                            .tag(ColorScheme.dark)
+                        Text("light")
+                            .tag(ColorScheme.light)
+                        Text("default")
+                            .tag(Optional<ColorScheme>.none)
+                    }
+                    .pickerStyle(.automatic)
+//                    .scaleEffect(x: 0.85)
                 }
                 TextField("glyth", text: $customShape)
             }
         }
         .padding(uniPadding)
+        .foregroundColor(answerScheme ?? colorScheme == .dark ? .white : .black)
         .background(bg)
         .onAppear {
             loadStyles()
@@ -68,36 +98,28 @@ struct AnswerEditor: View {
             addToStyle()
 //            loadStyles()
         }
+        .onChange(of: answerScheme) { newValue in
+            addToStyle()
+        }
     }
     
     var bg: Color {
         Color(hex: answer.style?.color ?? "", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
     }
     
-    private func loadStyles() {
-        if let style = answer.style {
-            customShape = style.shape
-            customColor = Color(hex: style.color, colorSpace: .displayP3)!
+    
+    
+    static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
+        switch colorScheme {
+        case .dark:
+            return correct ? Color(hex: "#228A44", colorSpace: .displayP3)! : Color(hex: "#AA1F1A", colorSpace: .displayP3)!
+        case .light:
+            return correct ? Color(hex: "#99EEBB", colorSpace: .displayP3)! : Color(hex: "#FAAAB5", colorSpace: .displayP3)!
+        @unknown default:
+            fatalError("new color dropped")
         }
     }
     
-    private func addToStyle() {
-        let colorHex: String? = {
-            guard let colorComp = customColor.cgColor?.components else { return nil }
-            guard customColor != .clear else { return nil }
-            let colorR = Int(colorComp[0] * 255)
-            let colorG = Int(colorComp[1] * 255)
-            let colorB = Int(colorComp[2] * 255)
-            
-            return String(format:"#%02x%02x%02x", colorR, colorG, colorB)
-        }()
-        
-        guard let colorHex, customShape != "" else { removeStyle(); return }
-        
-        let style = QuestionCard.Answer.StyleInfo(color: colorHex, shape: customShape)
-        
-        setStyle(style)
-    }
     
     public func padding(_ value: CGFloat) -> Self {
         var new = self
@@ -112,36 +134,10 @@ struct AnswerEditor: View {
         
         return new
     }
-    
-    private func setStyle(_ style: QuestionCard.Answer.StyleInfo) {
-        answer = QuestionCard.Answer(id: answer.id,
-                            name: answer.name,
-                            style: style,
-                            isCorrect: answer.isCorrect)
-    }
-    
-    private func removeStyle() {
-        answer = QuestionCard.Answer(id: answer.id,
-                            name: answer.name,
-                            style: nil,
-                            isCorrect: answer.isCorrect)
-    }
-    
-    static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
-        switch colorScheme {
-        case .dark:
-            return correct ? Color(hex: "#228A44", colorSpace: .displayP3)! : Color(hex: "#AA1F1A", colorSpace: .displayP3)!
-        case .light:
-            return correct ? Color(hex: "#99EEBB", colorSpace: .displayP3)! : Color(hex: "#FAAAB5", colorSpace: .displayP3)!
-        @unknown default:
-            fatalError("new color dropped")
-        }
-    }
-    
 }
 
 
-struct AnswerEditor_Previews: PreviewProvider {
+struct AnswerEditorView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             AnswerEditor(answer: .constant(.init(name: "default correct", style: nil, isCorrect: true)))

@@ -38,6 +38,16 @@ extension QuestionCard: Codable {
         struct StyleInfo: Codable {
             let color: String
             let shape: String
+            let accent: String?
+            
+            var accentScheme: ColorScheme? {
+                switch accent {
+                case .none: return nil
+                case "dark": return .dark
+                case "light": return .light
+                default: return nil
+                }
+            }
         }
         
         var color: SwiftUI.Color {
@@ -72,4 +82,23 @@ extension QuestionCard: Codable {
     }
 }
 
+extension ColorScheme {
+    var schemeDesc: String {
+        switch self {
+        case .light:
+            return "light"
+        case .dark:
+            return "dark"
+        @unknown default:
+            fatalError()
+        }
+    }
+}
 
+extension QuestionCard.Answer.StyleInfo {
+    init(color: String, shape: String) {
+        self.color = color
+        self.shape = shape
+        self.accent = nil
+    }
+}

@@ -121,9 +121,9 @@ struct QuestionEditorView: View {
             }
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
-                    AnswerEditor(answer: item)
+                    AnswerEditorView(answer: item)
                         .padding(8)
-                        .styleTransition(.spring(response: 0.3, dampingFraction: 0.4, blendDuration: 0.3))
+                        .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
                         .id(item.id)
                         .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
                         .cornerRadius(6)

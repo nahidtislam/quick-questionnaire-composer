@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2548BB0729ACCC8B005A03DA /* AnswerEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2548BB0629ACCC8B005A03DA /* AnswerEditor.swift */; };
+		2548BB0929B12D1C005A03DA /* AnswerEditor+Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2548BB0829B12D1C005A03DA /* AnswerEditor+Model.swift */; };
 		25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */; };
 		25C88DE629A24E8B0073F412 /* QuestionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DE529A24E8B0073F412 /* QuestionsListView.swift */; };
 		25C88DE829A24E8D0073F412 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25C88DE729A24E8D0073F412 /* Assets.xcassets */; };
@@ -22,6 +23,7 @@
 
 /* Begin PBXFileReference section */
 		2548BB0629ACCC8B005A03DA /* AnswerEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerEditor.swift; sourceTree = "<group>"; };
+		2548BB0829B12D1C005A03DA /* AnswerEditor+Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AnswerEditor+Model.swift"; sourceTree = "<group>"; };
 		25C88DE029A24E8B0073F412 /* quick questionnaire composer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "quick questionnaire composer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickQuestionnaireComposerApp.swift; sourceTree = "<group>"; };
 		25C88DE529A24E8B0073F412 /* QuestionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionsListView.swift; sourceTree = "<group>"; };
@@ -69,13 +71,14 @@
 			children = (
 				25C88DE329A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift */,
 				25C88DFA29A285080073F412 /* QuestionEditorView.swift */,
+				2548BB0629ACCC8B005A03DA /* AnswerEditor.swift */,
+				2548BB0829B12D1C005A03DA /* AnswerEditor+Model.swift */,
 				25C88DE529A24E8B0073F412 /* QuestionsListView.swift */,
 				25C88DF329A2576C0073F412 /* QuestionsListViewModel.swift */,
 				25C88DFC29A679EE0073F412 /* QuestionView.swift */,
 				25C88DF129A252930073F412 /* QuestionCard.swift */,
 				25C88DE729A24E8D0073F412 /* Assets.xcassets */,
 				25C88DE929A24E8D0073F412 /* Preview Content */,
-				2548BB0629ACCC8B005A03DA /* AnswerEditor.swift */,
 			);
 			path = "quick questionnaire composer";
 			sourceTree = "<group>";
@@ -159,6 +162,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				25C88DFD29A679EE0073F412 /* QuestionView.swift in Sources */,
+				2548BB0929B12D1C005A03DA /* AnswerEditor+Model.swift in Sources */,
 				25C88DE629A24E8B0073F412 /* QuestionsListView.swift in Sources */,
 				25C88DF229A252930073F412 /* QuestionCard.swift in Sources */,
 				25C88DFB29A285080073F412 /* QuestionEditorView.swift in Sources */,
