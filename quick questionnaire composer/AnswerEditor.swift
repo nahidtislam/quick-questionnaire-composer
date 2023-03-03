@@ -10,11 +10,9 @@ import SwiftUI
 struct AnswerEditor: View {
     
     @Binding var answer: QuestionCard.Answer
-    @State var isStyling = false
     
-    @State var customColor = Color.clear
-    @State var customShape = ""
-    @State var answerScheme: ColorScheme? = nil
+    @State var isStyling = false
+    @State var activeStyle = AnswerStyler()
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -45,9 +43,9 @@ struct AnswerEditor: View {
             
             if isStyling {
                 HStack {
-                    if customColor != .clear {
+                    if activeStyle.color != .clear {
                         Button {
-                            withAnimation { customColor = .clear }
+                            withAnimation { activeStyle.color = .clear }
                         } label: {
 //                            Image(systemName: "clear.fill")
                             Text("clear")
@@ -59,7 +57,7 @@ struct AnswerEditor: View {
                                 .padding(.trailing, -6)
                         }
                     }
-                    ColorPicker(selection: $customColor, supportsOpacity: false) {
+                    ColorPicker(selection: $activeStyle.color, supportsOpacity: false) {
                         ZStack{
                             // this is displayed to the actual picker
                             Text(answer.name)
@@ -71,7 +69,7 @@ struct AnswerEditor: View {
                                 .font(.subheadline.width(.condensed))
                         }
                     }
-                    Picker("content accent", selection: $answerScheme) {
+                    Picker("content accent", selection: $activeStyle.answerScheme) {
                         Text("dark")
                             .tag(ColorScheme.dark)
                         Text("light")
@@ -82,24 +80,18 @@ struct AnswerEditor: View {
                     .pickerStyle(.automatic)
 //                    .scaleEffect(x: 0.85)
                 }
-                TextField("glyth", text: $customShape)
+                TextField("glyth", text: $activeStyle.shape)
             }
         }
         .padding(uniPadding)
-        .foregroundColor(answerScheme ?? colorScheme == .dark ? .white : .black)
+//        .foregroundColor(answerScheme ?? colorScheme == .dark ? .white : .black)
         .background(bg)
         .onAppear {
-            loadStyles()
-        }.onChange(of: customShape) { newValue in
-            addToStyle()
-//            loadStyles()
+            if let style = answer.style { activeStyle.readStatic(style: style) }
+//            vm.answer = self.answer
         }
-        .onChange(of: customColor) { newValue in
-            addToStyle()
-//            loadStyles()
-        }
-        .onChange(of: answerScheme) { newValue in
-            addToStyle()
+        .onChange(of: activeStyle) { newValue in
+            newValue.update(answer: &answer)
         }
     }
     

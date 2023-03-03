@@ -38,4 +38,14 @@ extension Color {
         
         self.init(colorSpace, red: rValue, green: gValue, blue: bValue)
     }
+    
+    var hexValue: String? {
+        guard let colorComp = self.cgColor?.components else { return nil }
+        
+        let colorR = Int(colorComp[0] * 255)
+        let colorG = Int(colorComp[1] * 255)
+        let colorB = Int(colorComp[2] * 255)
+        
+        return String(format:"#%02x%02x%02x", colorR, colorG, colorB)
+    }
 }

@@ -121,7 +121,7 @@ struct QuestionEditorView: View {
             }
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
-                    AnswerEditorView(answer: item)
+                    AnswerEditor(answer: item)
                         .padding(8)
                         .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
                         .id(item.id)
