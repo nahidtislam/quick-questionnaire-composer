@@ -71,20 +71,22 @@ struct AnswerEditor: View {
                     }
                     Picker("content accent", selection: $activeStyle.answerScheme) {
                         Text("dark")
-                            .tag(ColorScheme.dark)
+                            .tag(Optional<ColorScheme>.some(.dark))
                         Text("light")
-                            .tag(ColorScheme.light)
+                            .tag(Optional<ColorScheme>.some(.light))
                         Text("default")
                             .tag(Optional<ColorScheme>.none)
                     }
                     .pickerStyle(.automatic)
-//                    .scaleEffect(x: 0.85)
+                    .padding(.horizontal, -4)
+                    .padding(.leading, activeStyle.answerScheme == .none ? -6 : 0)
+//                    .animation(.default, value: activeStyle.answerScheme)
                 }
                 TextField("glyth", text: $activeStyle.shape)
             }
         }
         .padding(uniPadding)
-//        .foregroundColor(answerScheme ?? colorScheme == .dark ? .white : .black)
+        .foregroundColor(accentColor)
         .background(bg)
         .onAppear {
             if let style = answer.style { activeStyle.readStatic(style: style) }
@@ -95,11 +97,14 @@ struct AnswerEditor: View {
         }
     }
     
-    var bg: Color {
+    private var bg: Color {
         Color(hex: answer.style?.color ?? "", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
     }
     
-    
+    private var accentColor: Color {
+        guard let scheme = activeStyle.answerScheme, answer.style != nil else { return .primary }
+        return scheme == .dark ? .black : .white
+    }
     
     static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
         switch colorScheme {

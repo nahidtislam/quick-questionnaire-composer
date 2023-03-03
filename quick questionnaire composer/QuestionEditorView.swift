@@ -160,8 +160,8 @@ struct QuetionsEditorView_Previews: PreviewProvider {
         .init(name: "placeholder correct", style: nil, isCorrect: true),
         .init(name: "placeholder incorrect", style: nil, isCorrect: false),
         .init(name: "styled blueish", style: .init(color: "#11AAFF", shape: "01.square.fill"), isCorrect: false),
-        .init(name: "styled marroon", style: .init(color: "#BB4588", shape: "aqi.medium"), isCorrect: true),
-        .init(name: "lime???", style: .init(color: "#00EE82", shape: "allergens"), isCorrect: true)
+        .init(name: "styled marroon", style: .init(color: "#BB4588", shape: "aqi.medium", accent: ColorScheme.light.schemeDesc), isCorrect: true),
+        .init(name: "lime???", style: .init(color: "#00EE82", shape: "allergens", accent: ColorScheme.dark.schemeDesc), isCorrect: true)
     ]
     
     static var previews: some View {

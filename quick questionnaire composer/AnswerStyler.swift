@@ -19,7 +19,9 @@ struct AnswerStyler: Equatable {
         .init(color: color.hexValue!, shape: shape, accent: answerScheme?.schemeDesc)
     }
     
-    var styleIsValid: Bool { color != .clear && color.hexValue != nil && shape != "" }
+    var colorExists: Bool { color != .clear && color.hexValue != nil }
+    
+    var styleIsValid: Bool { colorExists && shape != "" }
     
     func genrateInfo() -> Info? { styleIsValid ? staticInfo : nil }
     
