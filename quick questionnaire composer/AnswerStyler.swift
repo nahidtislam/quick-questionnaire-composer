@@ -19,14 +19,17 @@ struct AnswerStyler: Equatable {
         .init(color: color.hexValue!, shape: shape, accent: answerScheme?.schemeDesc)
     }
     
+    var sfSymbolExists: Bool { UIImage(systemName: shape) != nil }
     var colorExists: Bool { color != .clear && color.hexValue != nil }
     
-    var styleIsValid: Bool { colorExists && shape != "" }
+    var styleIsValid: Bool { colorExists && sfSymbolExists }
     
     func genrateInfo() -> Info? { styleIsValid ? staticInfo : nil }
     
     func update(answer: inout QuestionCard.Answer) {
-        let updated = QuestionCard.Answer(id: answer.id, name: answer.name, style: genrateInfo(), isCorrect: answer.isCorrect)
+        let updated = QuestionCard.Answer(
+            id: answer.id, name: answer.name, style: genrateInfo(), isCorrect: answer.isCorrect
+        )
         answer = updated
     }
     
