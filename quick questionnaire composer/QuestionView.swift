@@ -13,7 +13,13 @@ struct QuestionView: View {
     
     var qSpace: Namespace.ID
     
-    @State var isEditing = false
+    @State var showingAnswers = false
+    var answerGridItem: [GridItem] {
+        [
+            .init(),
+            .init()
+        ]
+    }
     
     static func defaultBG(scheme colorScheme: ColorScheme) -> Color {
         colorScheme == .dark ? Color(hex: "#1E1E1E", colorSpace: .displayP3)! : Color(hex: "#EEEEEE", colorSpace: .displayP3)!
@@ -37,6 +43,9 @@ struct QuestionView: View {
             HStack {
                 Text("possible answers: ")
                     .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
+                    .onTapGesture {
+                        showingAnswers.toggle()
+                    }
                 Spacer()
                 Text("\(question.possibleAnswers.count)")
                     .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(value)", in: qSpace)
@@ -48,6 +57,20 @@ struct QuestionView: View {
                     Text("\(question.allCorrectAnswersRequired ? "yes" : "no")")
                 }
                 .matchedGeometryEffect(id: "q_card-\(question.id):all_answers_needed", in: qSpace)
+            }
+            if showingAnswers {
+                LazyVGrid(columns: answerGridItem) {
+                    ForEach(question.possibleAnswers) { answer in
+                        HStack {
+                            answer.shape
+                            Text(answer.name)
+                        }
+                        .frame(width: 120, height: 90)
+                        .foregroundColor((answer.style?.accentScheme == .dark ? .black : .white) ?? .primary)
+                        .background(Color(hex: answer.style?.color ?? "black", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme))
+                        .cornerRadius(30)
+                    }
+                }
             }
         }
         .padding()
@@ -87,6 +110,6 @@ struct QuestionView_Previews: PreviewProvider {
     @Namespace static var previewNamespace
     
     static var previews: some View {
-        QuestionView(question: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [], allCorrectAnswersRequired: true), qSpace: previewNamespace)
+        QuestionView(question: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [.init(name: "ans1", style: nil, isCorrect: true), .init(name: "ans2", style: .init(color: "#2080FF", shape: "arrow.up.and.down.square.fill"), isCorrect: false)], allCorrectAnswersRequired: true), qSpace: previewNamespace)
     }
 }

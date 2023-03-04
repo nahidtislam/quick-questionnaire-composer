@@ -26,7 +26,7 @@ struct QuestionCard: Identifiable {
     
 }
 
-extension QuestionCard: Codable {
+extension QuestionCard: Codable, Equatable {
     struct Answer: Codable, Identifiable {
         var id = UUID()
         var name: String
@@ -80,6 +80,11 @@ extension QuestionCard: Codable {
         field.namespace(question: self) +
             (tag != nil ? "(\(tag!.replacingOccurrences(of: " ", with: "_")))" : "")
     }
+    
+    static func == (lhs: QuestionCard, rhs: QuestionCard) -> Bool {
+        lhs.title == rhs.title && lhs.subtitle == rhs.subtitle && lhs.marks == rhs.marks && lhs.possibleAnswers == rhs.possibleAnswers
+    }
+    
 }
 
 extension ColorScheme {
