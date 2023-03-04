@@ -39,7 +39,9 @@ struct AnswerEditor: View {
 
             }
             .transition(.move(edge: .bottom))
-            Toggle("is correct", isOn: $answer.isCorrect)
+            TickBox(title: "is correct", isOn: $answer.isCorrect, imagePair: [true : Image(systemName: "checkmark.circle.fill"), false : Image(systemName: "tag.slash")])
+//            Toggle("is correct", isOn: $answer.isCorrect)
+//                .toggleStyle(.button)
             
             if isStyling {
                 HStack {
@@ -47,7 +49,6 @@ struct AnswerEditor: View {
                         Button {
                             withAnimation { activeStyle.color = .clear }
                         } label: {
-//                            Image(systemName: "clear.fill")
                             Text("clear")
                                 .font(.footnote.weight(.bold).width(.condensed))
                                 .padding(.horizontal, 4)
@@ -69,6 +70,7 @@ struct AnswerEditor: View {
                                 .font(.subheadline.width(.condensed))
                         }
                     }
+                    .animation(.easeOut, value: activeStyle.answerScheme)
                     Picker("content accent", selection: $activeStyle.answerScheme) {
                         Text("dark")
                             .tag(Optional<ColorScheme>.some(.dark))
@@ -80,7 +82,7 @@ struct AnswerEditor: View {
                     .pickerStyle(.automatic)
                     .padding(.horizontal, -4)
                     .padding(.leading, activeStyle.answerScheme == .none ? -6 : 0)
-//                    .animation(.default, value: activeStyle.answerScheme)
+                    .disabled(!activeStyle.styleIsValid)
                 }
                 TextField("glyth", text: $activeStyle.shape)
             }

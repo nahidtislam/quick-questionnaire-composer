@@ -34,9 +34,9 @@ struct QuestionEditorView: View {
                 .transition(.push(from: .top))
             lineSeperator
             
-            Toggle("all correct answers required to get points for this question", isOn: $vm.allCorrectAnswersRequired)
+            Toggle("all correct answers required to get marks", isOn: $vm.allCorrectAnswersRequired)
                 .matchedGeometryEffect(id: question.generateNamespace(for: .allCorrectAnswersRequired), in: qSpace)
-                .font(.caption)
+                .font(.caption.width(.condensed))
             
             display("answers", value: vm.possibleAnswers.count)
                 .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
@@ -63,7 +63,14 @@ struct QuestionEditorView: View {
                     vm.subtitleInput = descprition
                 }
                 if question.marks > 0 {
-                    vm.availableMarksInput = "\(question.marks)"
+                    let mark: String
+                    if question.marks == Double(Int(question.marks)) {
+                        mark = "\(Int(question.marks))"
+                    } else {
+                        mark = "\(question.marks)"
+                    }
+                    
+                    vm.availableMarksInput = mark
                     
                 }
                 vm.possibleAnswers = question.possibleAnswers
@@ -111,14 +118,12 @@ struct QuestionEditorView: View {
         field.namespace(question: question)
     }
     
+    var buttonActionStyle: Font {
+        Font.title2.weight(.bold)
+    }
+    
     var answerBox: some View {
         VStack {
-            Button("add answer") {
-                let ans = QuestionCard.Answer(name: "", style: nil, isCorrect: false)
-                withAnimation(answerAnimation) {
-                    vm.possibleAnswers.append(ans)
-                }
-            }
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
                     AnswerEditor(answer: item)
@@ -135,15 +140,40 @@ struct QuestionEditorView: View {
                     vm.possibleAnswers.move(fromOffsets: i, toOffset: target)
                 }
             }
+            .onChange(of: vm.questionOutput, perform: { newValue in
+                if vm.isValid { question = newValue }
+            })
             .frame(height: 88 * CGFloat(min(4, vm.possibleAnswers.count)))
-            Button("delete answer") {
-                withAnimation(answerAnimation) {
-                    _ = vm.possibleAnswers.removeLast()
+            .cornerRadius(16)
+            HStack(spacing: 20) {
+                Button {
+                    withAnimation(answerAnimation) { vm.performUndo() }
+//                    vm.possibleAnswers.append(vm.deletedAnswers.popLast()!)
+                } label: {
+                    Image(systemName: "arrow.uturn.backward.circle")
+                        .font(buttonActionStyle)
                 }
+                .disabled(vm.lastAction == .delete ? vm.deletedAnswers.count == 0 : vm.possibleAnswers.count == 0)
+                if vm.possibleAnswers.count != 0 {
+                    Spacer()
+                }
+                Button(role: .destructive) {
+                    withAnimation(answerAnimation) { vm.deleteLastAnswer() }
+                } label: {
+                    Image(systemName: "minus.rectangle.fill")
+                        .font(buttonActionStyle)
+                }
+                .disabled(vm.possibleAnswers.count == 0)
+                Button {
+                    withAnimation(answerAnimation) { vm.addBlankAnswer() }
+                } label: {
+                    Image(systemName: "plus.rectangle.fill")
+                        .font(buttonActionStyle)
+                }
+                
             }
-            .disabled(vm.possibleAnswers.count == 0)
         }
-        .padding()
+        .padding(10)
         .background(answerContainerColor)
         .cornerRadius(20)
     }
@@ -182,12 +212,51 @@ extension QuestionEditorView {
         @Published var allCorrectAnswersRequired = false
         
         @Published var possibleAnswers = [QuestionCard.Answer]()
+        @Published var deletedAnswers = [QuestionCard.Answer]()
+        
+        var lastAction: DataAction = .delete
         
         var subtitleOutput: String? {
             if subtitleIsEnabled && subtitleInput != "" {
                 return subtitleInput
             }  else {
                 return nil
+            }
+        }
+        
+        func addBlankAnswer() {
+            let ans = QuestionCard.Answer(name: "", style: nil, isCorrect: false)
+            add(answer: ans)
+        }
+        
+        func add(answer: QuestionCard.Answer) {
+            possibleAnswers.append(answer)
+            lastAction = .add
+        }
+        
+        func deleteLastAnswer() {
+            delete(at: possibleAnswers.count - 1)
+        }
+        
+        func delete(at index: Int) {
+            let deleted = possibleAnswers.remove(at: index)
+            deletedAnswers.append(deleted)
+            lastAction = .delete
+        }
+        
+        func delete(atOffsets indexSet: IndexSet) {
+            possibleAnswers.remove(atOffsets: indexSet)
+            lastAction = .delete
+        }
+        
+        func performUndo() {
+            switch lastAction {
+            case .add:
+                deleteLastAnswer()
+//                lastAction = .add
+            case .delete:
+                add(answer: deletedAnswers.removeLast())
+//                lastAction = .delete
             }
         }
         
@@ -199,8 +268,12 @@ extension QuestionEditorView {
             possibleAnswers.filter({ $0.isCorrect }).count
         }
         
+        var containsEmptyAnsTitile: Bool {
+            possibleAnswers.first { $0.name == "" } != nil
+        }
+        
         var isValid: Bool {
-            correctAnsCount > 0 && availableMarksOutput > 0
+            correctAnsCount > 0 && availableMarksOutput > 0 && !containsEmptyAnsTitile
         }
         
         var questionOutput: QuestionCard {
@@ -212,6 +285,10 @@ extension QuestionEditorView {
                 possibleAnswers: possibleAnswers,
                 allCorrectAnswersRequired: allCorrectAnswersRequired
             )
+        }
+        
+        enum DataAction {
+        case delete, add
         }
     }
 }

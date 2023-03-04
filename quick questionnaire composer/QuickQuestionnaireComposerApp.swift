@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct QuickQuestionnaireComposerApp: App {
+struct QuickQuestionnaireComposerApp: App { 
     var body: some Scene {
         WindowGroup {
             QuestionsListView()
