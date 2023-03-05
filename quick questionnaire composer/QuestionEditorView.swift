@@ -17,6 +17,8 @@ struct QuestionEditorView: View {
     var qSpace: Namespace.ID
     @StateObject var vm = ViewModel()
     
+    @State var ansOffset: [UUID:CGFloat] = [:]
+    
     var body: some View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.titleInput)
@@ -135,17 +137,45 @@ struct QuestionEditorView: View {
         VStack {
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
-                    AnswerEditor(answer: item)
-                        .padding(8)
-                        .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
-                        .styleTransitionCompetion { appearing in
-                            withAnimation {
-                                vm.answerStyler(isAppearing: appearing, for: item.id)
-                            }
+                    ZStack(alignment: .trailing) {
+                        Button {
+                            vm.delete(at: item.id)
+                        } label: {
+                            Image(systemName: "trash.fill")
                         }
-                        .id(item.id)
-                        .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
-                        .cornerRadius(6)
+                        .font(.title2)
+                        .padding(10)
+                        .foregroundColor(.white)
+                        .background(Color.red)
+                        .cornerRadius(30)
+                        .offset(x: 16 * ansOffset[item.id, default: 0] / 80)
+                        AnswerEditor(answer: item)
+                            .padding(8)
+                            .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
+                            .styleTransitionCompetion { appearing in
+                                withAnimation {
+                                    vm.answerStyler(isAppearing: appearing, for: item.id)
+                                }
+                            }
+                            .id(item.id)
+                            .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
+                            .cornerRadius(6)
+                            .offset(x: ansOffset[item.id] ?? 0)
+                            .gesture(
+                                DragGesture()
+                                    .onChanged{ v in
+                                        ansOffset[item.id] = v.translation.width
+                                    }
+                                    .onEnded{ v in
+                                        let threshold: CGFloat = -80
+                                        let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
+                                        
+                                        withAnimation {
+                                            ansOffset[item.id] = setPosition
+                                        }
+                                    }
+                        )
+                    }
                 }
                 .onDelete { i in
                     vm.possibleAnswers.remove(atOffsets: i)
@@ -254,6 +284,11 @@ extension QuestionEditorView {
         
         func deleteLastAnswer() {
             delete(at: possibleAnswers.count - 1)
+        }
+        
+        func delete(at id: UUID) {
+            let index = possibleAnswers.firstIndex(where: { $0.id == id})!
+            delete(at: index)
         }
         
         func delete(at index: Int) {

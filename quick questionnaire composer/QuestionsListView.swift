@@ -23,7 +23,7 @@ struct QuestionsListView: View {
                     .navigationTitle("welcome")
             } else {
                 cardList
-                    .navigationTitle("questions maker \(editingForUUID != nil ? "yes - \(editingForUUID!)" : "no")")
+                    .navigationTitle("questions maker")
                 Button("add") {
                     vm.addQuestion()
                 }
