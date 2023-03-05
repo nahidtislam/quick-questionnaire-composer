@@ -18,6 +18,7 @@ struct AnswerEditor: View {
     
     var uniPadding: CGFloat = 0
     var styleTransition: Animation = .interactiveSpring()
+    var stylerAction: ((Bool) -> Void) = { _ in }
     
     var body: some View {
         VStack {
@@ -31,6 +32,7 @@ struct AnswerEditor: View {
                     withAnimation(styleTransition) {
                         isStyling.toggle()
                     }
+                    stylerAction(isStyling)
                 } label: {
                     Image(systemName: isStyling ? "chevron.down.circle.fill" : "chevron.right.square")
                         .resizable()
@@ -104,8 +106,9 @@ struct AnswerEditor: View {
     }
     
     private var accentColor: Color {
-        guard let scheme = activeStyle.answerScheme, answer.style != nil else { return .primary }
-        return scheme == .dark ? .black : .white
+        answer.accentColor
+//        guard let scheme = activeStyle.answerScheme, answer.style != nil else { return .primary }
+//        return scheme == .dark ? .black : .white
     }
     
     static func defaultColor(when correct: Bool, colorScheme: ColorScheme) -> Color {
@@ -130,6 +133,13 @@ struct AnswerEditor: View {
     public func styleTransition(_ value: Animation) -> Self {
         var new = self
         new.styleTransition = value
+        
+        return new
+    }
+    
+    public func styleTransitionCompetion(_ value: @escaping ((Bool) -> Void)) -> Self {
+        var new = self
+        new.stylerAction = value
         
         return new
     }

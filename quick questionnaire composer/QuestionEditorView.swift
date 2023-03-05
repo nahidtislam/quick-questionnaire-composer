@@ -122,6 +122,15 @@ struct QuestionEditorView: View {
         Font.title2.weight(.bold)
     }
     
+    var answerScrollViewHeight: CGFloat {
+        let cellSize: CGFloat = 76
+        let stylerSize: CGFloat = 65 * min(CGFloat(vm.stylerIsShownForIndexes.count), 1)
+        
+        let maxCells: CGFloat = 3
+        
+        return cellSize * min(CGFloat(vm.possibleAnswers.count), maxCells) + stylerSize
+    }
+    
     var answerBox: some View {
         VStack {
             ScrollView {
@@ -129,6 +138,11 @@ struct QuestionEditorView: View {
                     AnswerEditor(answer: item)
                         .padding(8)
                         .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
+                        .styleTransitionCompetion { appearing in
+                            withAnimation {
+                                vm.answerStyler(isAppearing: appearing, for: item.id)
+                            }
+                        }
                         .id(item.id)
                         .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
                         .cornerRadius(6)
@@ -143,43 +157,46 @@ struct QuestionEditorView: View {
             .onChange(of: vm.questionOutput, perform: { newValue in
                 if vm.isValid { question = newValue }
             })
-            .frame(height: 88 * CGFloat(min(4, vm.possibleAnswers.count)))
+            .frame(height: answerScrollViewHeight)
             .cornerRadius(16)
-            HStack(spacing: 20) {
-                Button {
-                    withAnimation(answerAnimation) { vm.performUndo() }
-//                    vm.possibleAnswers.append(vm.deletedAnswers.popLast()!)
-                } label: {
-                    Image(systemName: "arrow.uturn.backward.circle")
-                        .font(buttonActionStyle)
-                }
-                .disabled(vm.lastAction == .delete ? vm.deletedAnswers.count == 0 : vm.possibleAnswers.count == 0)
-                if vm.possibleAnswers.count != 0 {
-                    Spacer()
-                }
-                Button(role: .destructive) {
-                    withAnimation(answerAnimation) { vm.deleteLastAnswer() }
-                } label: {
-                    Image(systemName: "minus.rectangle.fill")
-                        .font(buttonActionStyle)
-                }
-                .disabled(vm.possibleAnswers.count == 0)
-                Button {
-                    withAnimation(answerAnimation) { vm.addBlankAnswer() }
-                } label: {
-                    Image(systemName: "plus.rectangle.fill")
-                        .font(buttonActionStyle)
-                }
-                
-            }
+            answerListControls
         }
         .padding(10)
         .background(answerContainerColor)
         .cornerRadius(20)
     }
     
+    private var answerListControls: some View {
+        HStack(spacing: 20) {
+            Button {
+                withAnimation(answerAnimation) { vm.performUndo() }
+            } label: {
+                Image(systemName: "arrow.uturn.backward.circle")
+                    .font(buttonActionStyle)
+            }
+            .disabled(vm.lastAction == .delete ? vm.deletedAnswers.count == 0 : vm.possibleAnswers.count == 0)
+            if vm.possibleAnswers.count != 0 {
+                Spacer()
+            }
+            Button(role: .destructive) {
+                withAnimation(answerAnimation) { vm.deleteLastAnswer() }
+            } label: {
+                Image(systemName: "minus.rectangle.fill")
+                    .font(buttonActionStyle)
+            }
+            .disabled(vm.possibleAnswers.count == 0)
+            Button {
+                withAnimation(answerAnimation) { vm.addBlankAnswer() }
+            } label: {
+                Image(systemName: "plus.rectangle.fill")
+                    .font(buttonActionStyle)
+            }
+            
+        }
+    }
+    
     private var answerContainerColor: Color? {
-        colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#A9DFFF", colorSpace: .displayP3)
+        colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#C9E8FF", colorSpace: .displayP3)
     }
 }
 
@@ -191,7 +208,7 @@ struct QuetionsEditorView_Previews: PreviewProvider {
         .init(name: "placeholder incorrect", style: nil, isCorrect: false),
         .init(name: "styled blueish", style: .init(color: "#11AAFF", shape: "01.square.fill"), isCorrect: false),
         .init(name: "styled marroon", style: .init(color: "#BB4588", shape: "aqi.medium", accent: ColorScheme.light.schemeDesc), isCorrect: true),
-        .init(name: "lime???", style: .init(color: "#00EE82", shape: "allergens", accent: ColorScheme.dark.schemeDesc), isCorrect: true)
+        .init(name: "lime??", style: .init(color: "#00EE82", shape: "allergens", accent: ColorScheme.dark.schemeDesc), isCorrect: true)
     ]
     
     static var previews: some View {
@@ -215,6 +232,7 @@ extension QuestionEditorView {
         @Published var deletedAnswers = [QuestionCard.Answer]()
         
         var lastAction: DataAction = .delete
+        @Published var stylerIsShownForIndexes = Set<Int>()
         
         var subtitleOutput: String? {
             if subtitleIsEnabled && subtitleInput != "" {
@@ -240,12 +258,14 @@ extension QuestionEditorView {
         
         func delete(at index: Int) {
             let deleted = possibleAnswers.remove(at: index)
+            stylerIsShownForIndexes.remove(index)
             deletedAnswers.append(deleted)
             lastAction = .delete
         }
         
         func delete(atOffsets indexSet: IndexSet) {
             possibleAnswers.remove(atOffsets: indexSet)
+//            stylerIsShownForIndexes.remove(at: Set<Int>.Index(indexSet))
             lastAction = .delete
         }
         
@@ -257,6 +277,16 @@ extension QuestionEditorView {
             case .delete:
                 add(answer: deletedAnswers.removeLast())
 //                lastAction = .delete
+            }
+        }
+        
+        func answerStyler(isAppearing: Bool, for uuid: UUID) {
+            let index = possibleAnswers.firstIndex(where: { $0.id == uuid })!
+            
+            if isAppearing {
+                stylerIsShownForIndexes.insert(index)
+            } else {
+                stylerIsShownForIndexes.remove(index)
             }
         }
         

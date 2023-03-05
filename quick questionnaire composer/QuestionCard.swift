@@ -54,6 +54,11 @@ extension QuestionCard: Codable, Equatable {
             Color(hex: style?.color ?? "fail it lol", colorSpace: .displayP3) ?? .primary
         }
         
+        var accentColor: Color {
+            guard let scheme = style?.accentScheme else { return .primary }
+            return scheme == .dark ? .black : .white
+        }
+        
         var shape: SwiftUI.Image { Image(systemName: style?.shape ?? "circle.fill") }
     }
     
