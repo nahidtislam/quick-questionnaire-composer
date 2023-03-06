@@ -39,15 +39,15 @@ struct QuestionEditorView: View {
             Toggle("all correct answers required to get marks", isOn: $vm.allCorrectAnswersRequired)
                 .matchedGeometryEffect(id: question.generateNamespace(for: .allCorrectAnswersRequired), in: qSpace)
                 .font(.caption.width(.condensed))
-            
-            display("answers", value: vm.possibleAnswers.count)
-                .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
-            display("correct", value: vm.correctAnsCount)
+            answerInfo
+            ColorPicker(selection: $vm.questionColor, supportsOpacity: false) {
+                Text("bg")
+            }
             marksTextField
             
             HStack(spacing: 40) {
                 Button("cancel") {}
-                Button("add") {
+                Button("<") {
                     question = vm.questionOutput
                 }
                 .disabled(!vm.isValid)
@@ -79,6 +79,14 @@ struct QuestionEditorView: View {
                 vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
                 vm.questionUUID = question.id
             }
+    }
+    
+    private var answerInfo:some View {
+        VStack {
+            display("answers", value: vm.possibleAnswers.count)
+                .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
+            display("correct", value: vm.correctAnsCount)
+        }
     }
     
     private var bg: Color {
@@ -139,7 +147,10 @@ struct QuestionEditorView: View {
                 ForEach($vm.possibleAnswers) { item in
                     ZStack(alignment: .trailing) {
                         Button {
-                            vm.delete(at: item.id)
+                            withAnimation {
+                                ansOffset[item.id] = nil
+                                vm.delete(at: item.id)
+                            }
                         } label: {
                             Image(systemName: "trash.fill")
                         }
@@ -148,40 +159,10 @@ struct QuestionEditorView: View {
                         .foregroundColor(.white)
                         .background(Color.red)
                         .cornerRadius(30)
+                        .scaleEffect(x: 0.8, y: 0.8)
                         .offset(x: 16 * ansOffset[item.id, default: 0] / 80)
-                        AnswerEditor(answer: item)
-                            .padding(8)
-                            .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
-                            .styleTransitionCompetion { appearing in
-                                withAnimation {
-                                    vm.answerStyler(isAppearing: appearing, for: item.id)
-                                }
-                            }
-                            .id(item.id)
-                            .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
-                            .cornerRadius(6)
-                            .offset(x: ansOffset[item.id] ?? 0)
-                            .gesture(
-                                DragGesture()
-                                    .onChanged{ v in
-                                        ansOffset[item.id] = v.translation.width
-                                    }
-                                    .onEnded{ v in
-                                        let threshold: CGFloat = -80
-                                        let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
-                                        
-                                        withAnimation {
-                                            ansOffset[item.id] = setPosition
-                                        }
-                                    }
-                        )
+                        populate(answer: item)
                     }
-                }
-                .onDelete { i in
-                    vm.possibleAnswers.remove(atOffsets: i)
-                }
-                .onMove { i, target in
-                    vm.possibleAnswers.move(fromOffsets: i, toOffset: target)
                 }
             }
             .onChange(of: vm.questionOutput, perform: { newValue in
@@ -228,6 +209,35 @@ struct QuestionEditorView: View {
     private var answerContainerColor: Color? {
         colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#C9E8FF", colorSpace: .displayP3)
     }
+    
+    private func populate(answer item: Binding<QuestionCard.Answer>) -> some View {
+        AnswerEditor(answer: item)
+            .padding(8)
+            .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
+            .styleTransitionCompetion { appearing in
+                withAnimation {
+                    vm.answerStyler(isAppearing: appearing, for: item.id)
+                }
+            }
+            .id(item.id)
+            .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
+            .cornerRadius(6)
+            .offset(x: ansOffset[item.id] ?? 0)
+            .gesture(
+                DragGesture()
+                    .onChanged{ v in
+                        ansOffset[item.id] = v.translation.width
+                    }
+                    .onEnded{ v in
+                        let threshold: CGFloat = -80
+                        let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
+                        
+                        withAnimation {
+                            ansOffset[item.id] = setPosition
+                        }
+                    }
+        )
+    }
 }
 
 struct QuetionsEditorView_Previews: PreviewProvider {
@@ -257,6 +267,8 @@ extension QuestionEditorView {
         
         @Published var subtitleIsEnabled = false
         @Published var allCorrectAnswersRequired = false
+        
+        @Published var questionColor = Color.clear
         
         @Published var possibleAnswers = [QuestionCard.Answer]()
         @Published var deletedAnswers = [QuestionCard.Answer]()
