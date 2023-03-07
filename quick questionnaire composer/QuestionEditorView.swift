@@ -41,22 +41,12 @@ struct QuestionEditorView: View {
                 .font(.caption.width(.condensed))
             answerInfo
             BackgroundColorPicker(selection: $vm.questionBgColorInput, accentSchme: $vm.questionBgAccentColorInput, name: vm.titleInput, label: "question background color")
-//                .onChange(of: vm.questionBgColorInput) { newValue in
-//                    if vm.isValid {
-//                        question.bgColorHex = newValue.hexValue
-//                    }
-//                }
-//                .onChange(of: vm.questionBgAccentColorInput) { newValue in
-//                    if vm.isValid {
-//
-//                    }
-//                }
             marksTextField
             
             HStack(spacing: 40) {
                 Button("cancel") {}
                 Button("<") {
-                    question = vm.questionOutput
+//                    presentationMode.isPresented = false
                 }
                 .disabled(!vm.isValid)
             }
@@ -87,7 +77,7 @@ struct QuestionEditorView: View {
             vm.possibleAnswers = question.possibleAnswers
             vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
             vm.questionUUID = question.id
-            vm.questionBgColorInput = Color(hex: question.bgColorHex ?? "", colorSpace: .displayP3) ?? .clear
+            vm.questionBgColorInput = Color(hex: question.bgStyle?.color ?? "", colorSpace: .displayP3) ?? .clear
         }
     }
     
@@ -155,24 +145,7 @@ struct QuestionEditorView: View {
         VStack {
             ScrollView {
                 ForEach($vm.possibleAnswers) { item in
-                    ZStack(alignment: .trailing) {
-                        Button {
-                            withAnimation {
-                                ansOffset[item.id] = nil
-                                vm.delete(at: item.id)
-                            }
-                        } label: {
-                            Image(systemName: "trash.fill")
-                        }
-                        .font(.title2)
-                        .padding(10)
-                        .foregroundColor(.white)
-                        .background(Color.red)
-                        .cornerRadius(30)
-                        .scaleEffect(x: 0.8, y: 0.8)
-                        .offset(x: 16 * ansOffset[item.id, default: 0] / 80)
-                        populate(answer: item)
-                    }
+                    populate(answer: item)
                 }
             }
             .onChange(of: vm.questionOutput, perform: update)
@@ -222,33 +195,61 @@ struct QuestionEditorView: View {
         colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#C9E8FF", colorSpace: .displayP3)
     }
     
+    private func deleteButton(initialScale: CGFloat, with value: CGFloat, for maxDistance: CGFloat) -> CGSize {
+        let compliment = 1 - initialScale // 1 - 0.8 = 0.2
+        let inverse = maxDistance / compliment // 80 / 0.2 = 400
+        
+        // 0.8 + min(0.2, -ansOffset[item.id, default: 0] / 400)
+        let len = initialScale + min(compliment, value / inverse)
+        
+        return .init(width: len, height: len)
+    }
+    
     private func populate(answer item: Binding<QuestionCard.Answer>) -> some View {
-        AnswerEditor(answer: item)
-            .padding(8)
-            .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
-            .styleTransitionCompetion { appearing in
+        ZStack(alignment: .trailing) {
+            Button {
                 withAnimation {
-                    vm.answerStyler(isAppearing: appearing, for: item.id)
+                    ansOffset[item.id] = nil
+                    vm.delete(at: item.id)
                 }
+            } label: {
+                Image(systemName: "trash.fill")
             }
-            .id(item.id)
-            .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
-            .cornerRadius(6)
-            .offset(x: ansOffset[item.id] ?? 0)
-            .gesture(
-                DragGesture()
-                    .onChanged{ v in
-                        ansOffset[item.id] = v.translation.width
+            .font(.title2)
+            .padding(10)
+            .foregroundColor(.white)
+            .background(Color.red)
+            .cornerRadius(.infinity)
+            .offset(x: 16 * ansOffset[item.id, default: 0] / 80)
+            .scaleEffect(deleteButton(initialScale: 0.4, with: -ansOffset[item.id, default: 0], for: 80))
+            AnswerEditor(answer: item)
+                .padding(8)
+                .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
+                .styleTransitionCompetion { appearing in
+                    withAnimation {
+                        vm.answerStyler(isAppearing: appearing, for: item.id)
                     }
-                    .onEnded{ v in
-                        let threshold: CGFloat = -80
-                        let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
-                        
-                        withAnimation {
-                            ansOffset[item.id] = setPosition
+                }
+                .id(item.id)
+                .animation(.easeIn(duration: 0.1), value: item.wrappedValue.isCorrect)
+                .cornerRadius(8)
+                .offset(x: ansOffset[item.id] ?? 0)
+                .gesture(
+                    DragGesture()
+                        .onChanged{ v in
+                            ansOffset[item.id] = v.translation.width
+                            print("0.8 + min(0.2, \(-ansOffset[item.id, default: 0] / 400)) : \(-ansOffset[item.id, default: 0] > 80 ? "yes" : "no")")
                         }
-                    }
-        )
+                        .onEnded{ v in
+                            let threshold: CGFloat = -80
+                            let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
+                            
+                            withAnimation {
+                                ansOffset[item.id] = setPosition
+                            }
+                        }
+            )
+        }
     }
 }
 
@@ -259,8 +260,8 @@ struct QuetionsEditorView_Previews: PreviewProvider {
         .init(name: "placeholder correct", style: nil, isCorrect: true),
         .init(name: "placeholder incorrect", style: nil, isCorrect: false),
         .init(name: "styled blueish", style: .init(color: "#11AAFF", shape: "01.square.fill"), isCorrect: false),
-        .init(name: "styled marroon", style: .init(color: "#BB4588", shape: "aqi.medium", accent: ColorScheme.light.schemeDesc), isCorrect: true),
-        .init(name: "lime??", style: .init(color: "#00EE82", shape: "allergens", accent: ColorScheme.dark.schemeDesc), isCorrect: true)
+        .init(name: "styled marroon", style: .init(shape: "aqi.medium", bgInfo: .init(color: "#BB4588", accent: ColorScheme.light.schemeDesc)), isCorrect: true),
+        .init(name: "lime??", style: .init(shape: "allergens", bgInfo: .init(color: "#00EE82", accent: ColorScheme.dark.schemeDesc)), isCorrect: true)
     ]
     
     static var previews: some View {
@@ -375,13 +376,19 @@ extension QuestionEditorView {
             correctAnsCount > 0 && availableMarksOutput > 0 && !containsEmptyAnsTitile
         }
         
+        var styleOutput: QuestionCard.BGStyle? {
+            guard let colorHex = questionBgColorOutput else { return nil }
+            
+                return .init(color: colorHex, accent: questionBgAccentColorOutput)
+        }
+        
         var questionOutput: QuestionCard {
             .init(
                 id: questionUUID,
                 title: titleInput,
                 subtitle: subtitleOutput,
                 marks: availableMarksOutput,
-                bgColorHex: questionBgColorOutput,
+                bgStyle: styleOutput,
                 possibleAnswers: possibleAnswers,
                 allCorrectAnswersRequired: allCorrectAnswersRequired
             )
