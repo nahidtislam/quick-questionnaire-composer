@@ -15,7 +15,7 @@ struct QuestionCard: Identifiable {
     
     let marks: Double
     
-    var bgColorHex: String? = nil
+    var bgStyle: BGStyle?
     
     let possibleAnswers: [Answer]
     var allCorrectAnswersRequired = false
@@ -24,6 +24,24 @@ struct QuestionCard: Identifiable {
         possibleAnswers.filter { $0.isCorrect }.count
     }
     
+    struct BGStyle: Codable {
+        let color: String
+        let accent: String?
+        
+        var colorGraphic: Color? { Color(hex: color, colorSpace: .displayP3) }
+        var accentScheme: ColorScheme? {
+            switch accent {
+            case .none: return nil
+            case "dark": return .dark
+            case "light": return .light
+            default: return nil
+            }
+        }
+        var accentGraphic: Color {
+            guard let scheme = accentScheme else { return .primary }
+            return scheme == .dark ? .black : .white
+        }
+    }
 }
 
 extension QuestionCard: Codable, Equatable {
@@ -36,39 +54,20 @@ extension QuestionCard: Codable, Equatable {
         var isCorrect: Bool
         
         struct StyleInfo: Codable {
-            let color: String
             let shape: String
-            let accent: String?
-            
-            var accentScheme: ColorScheme? {
-                switch accent {
-                case .none: return nil
-                case "dark": return .dark
-                case "light": return .light
-                default: return nil
-                }
-            }
-        }
-        
-        var color: SwiftUI.Color {
-            Color(hex: style?.color ?? "fail it lol", colorSpace: .displayP3) ?? .primary
-        }
-        
-        var accentColor: Color {
-            guard let scheme = style?.accentScheme else { return .primary }
-            return scheme == .dark ? .black : .white
+            let bgInfo: BGStyle
         }
         
         var shape: SwiftUI.Image { Image(systemName: style?.shape ?? "circle.fill") }
     }
     
-    init(title: String, subtitle: String? = nil, bgColorHex: String? = nil, possibleAnswers: [Answer], allCorrectAnswersRequired: Bool = false) {
+    init(title: String, subtitle: String? = nil, bgStyle: BGStyle? = nil, possibleAnswers: [Answer], allCorrectAnswersRequired: Bool = false) {
         self.id = UUID()
         
         self.title = title
         self.subtitle = subtitle
         self.marks = Double(possibleAnswers.count - 1)
-        self.bgColorHex = bgColorHex
+        self.bgStyle = bgStyle
         self.possibleAnswers = possibleAnswers
         self.allCorrectAnswersRequired = allCorrectAnswersRequired
     }
@@ -107,8 +106,7 @@ extension ColorScheme {
 
 extension QuestionCard.Answer.StyleInfo {
     init(color: String, shape: String) {
-        self.color = color
+        self.bgInfo = .init(color: color, accent: nil)
         self.shape = shape
-        self.accent = nil
     }
 }
