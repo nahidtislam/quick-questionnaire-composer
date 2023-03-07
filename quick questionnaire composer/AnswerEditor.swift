@@ -63,11 +63,11 @@ struct AnswerEditor: View {
     }
     
     private var bg: Color {
-        Color(hex: answer.style?.color ?? "", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
+        Color(hex: answer.style?.bgInfo.color ?? "", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme)
     }
     
     private var accentColor: Color {
-        answer.accentColor
+        answer.style?.bgInfo.accentGraphic ?? .primary
 //        guard let scheme = activeStyle.answerScheme, answer.style != nil else { return .primary }
 //        return scheme == .dark ? .black : .white
     }

@@ -86,7 +86,11 @@ extension QuestionCard: Codable, Equatable {
     }
     
     static func == (lhs: QuestionCard, rhs: QuestionCard) -> Bool {
-        lhs.title == rhs.title && lhs.subtitle == rhs.subtitle && lhs.marks == rhs.marks && lhs.possibleAnswers == rhs.possibleAnswers
+        lhs.title == rhs.title &&
+        lhs.subtitle == rhs.subtitle &&
+        lhs.marks == rhs.marks &&
+        lhs.possibleAnswers == rhs.possibleAnswers &&
+        lhs.bgStyle == rhs.bgStyle
     }
     
 }
@@ -101,6 +105,12 @@ extension ColorScheme {
         @unknown default:
             fatalError()
         }
+    }
+}
+
+extension QuestionCard.BGStyle: Equatable {
+    static func == (lhs: QuestionCard.BGStyle, rhs: QuestionCard.BGStyle) -> Bool {
+        lhs.color == rhs.color && lhs.accent == rhs.accent
     }
 }
 

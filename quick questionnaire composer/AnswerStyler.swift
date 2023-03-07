@@ -16,7 +16,8 @@ struct AnswerStyler: Equatable {
     var answerScheme: ColorScheme? = nil
     
     var staticInfo: Info {
-        .init(color: color.hexValue!, shape: shape, accent: answerScheme?.schemeDesc)
+//        .init(color: color.hexValue!, shape: shape, accent: answerScheme?.schemeDesc)
+        .init(shape: shape, bgInfo: .init(color: color.hexValue!, accent: answerScheme?.schemeDesc))
     }
     
     var sfSymbolExists: Bool { UIImage(systemName: shape) != nil }
@@ -34,8 +35,8 @@ struct AnswerStyler: Equatable {
     }
     
     mutating func readStatic(style: QuestionCard.Answer.StyleInfo) {
-        self.color = Color(hex: style.color, colorSpace: .displayP3)!
+        self.color = Color(hex: style.bgInfo.color, colorSpace: .displayP3)!
         self.shape = style.shape
-        self.answerScheme = style.accentScheme
+        self.answerScheme = style.bgInfo.accentScheme
     }
 }

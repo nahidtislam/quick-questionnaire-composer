@@ -69,8 +69,8 @@ struct QuestionView: View {
                                 .frame(width: 80)
                         }
                         .frame(width: 145, height: 95)
-                        .foregroundColor(answer.accentColor)
-                        .background(Color(hex: answer.style?.color ?? "black", colorSpace: .displayP3) ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme))
+                        .foregroundColor(answer.style?.bgInfo.accentGraphic ?? .primary)
+                        .background(answer.style?.bgInfo.colorGraphic ?? AnswerEditor.defaultColor(when: answer.isCorrect, colorScheme: colorScheme))
                         .matchedGeometryEffect(id: "q_card-\(question.id):answer-\(answer.id)", in: qSpace)
                         .cornerRadius(30)
                     }
@@ -97,12 +97,7 @@ struct QuestionView: View {
     }
     
     var bg: Color {
-//        return .blue
-        if let savedColor = Color(hex: question.bgColorHex ?? "fail it", colorSpace: .displayP3) {
-            return savedColor
-        } else {
-            return QuestionView.defaultBG(scheme: colorScheme)
-        }
+        question.bgStyle?.colorGraphic ?? QuestionView.defaultBG(scheme: colorScheme)
     }
     
     private func makeNamespace(for field: QuestionCard.FieldIdentifier) -> String {
@@ -115,6 +110,6 @@ struct QuestionView_Previews: PreviewProvider {
     @Namespace static var previewNamespace
     
     static var previews: some View {
-        QuestionView(question: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [.init(name: "ans1", style: nil, isCorrect: true), .init(name: "ans2", style: .init(color: "#2080FF", shape: "arrow.up.and.down.square.fill"), isCorrect: false), .init(name: "ans3", style: .init(color: "#881058", shape: "arrow.up.forward.circle.fill", accent: "light"), isCorrect: false)], allCorrectAnswersRequired: true), qSpace: previewNamespace)
+        QuestionView(question: QuestionCard(title: "test", subtitle: "the desc", possibleAnswers: [.init(name: "ans1", style: nil, isCorrect: true), .init(name: "ans2", style: .init(color: "#2080FF", shape: "arrow.up.and.down.square.fill"), isCorrect: false), .init(name: "ans3", style: .init(shape: "arrow.up.forward.circle.fill", bgInfo: .init(color: "#881058", accent: ColorScheme.light.schemeDesc)), isCorrect: false)], allCorrectAnswersRequired: true), qSpace: previewNamespace)
     }
 }
