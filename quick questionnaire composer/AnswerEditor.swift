@@ -46,46 +46,7 @@ struct AnswerEditor: View {
 //                .toggleStyle(.button)
             
             if isStyling {
-                HStack {
-                    if activeStyle.color != .clear {
-                        Button {
-                            withAnimation { activeStyle.color = .clear }
-                        } label: {
-                            Text("clear")
-                                .font(.footnote.weight(.bold).width(.condensed))
-                                .padding(.horizontal, 4)
-                                .foregroundColor(.white)
-                                .background(Color.accentColor)
-                                .cornerRadius(8)
-                                .padding(.trailing, -6)
-                        }
-                    }
-                    ColorPicker(selection: $activeStyle.color, supportsOpacity: false) {
-                        ZStack{
-                            // this is displayed to the actual picker
-                            Text(answer.name)
-                                .frame(width: 0, height: 0)
-                                .opacity(0)
-                                .foregroundColor(.clear)
-                            // shown to user before invoking picker
-                            Text("answer background color")
-                                .font(.subheadline.width(.condensed))
-                        }
-                    }
-                    .animation(.easeOut, value: activeStyle.answerScheme)
-                    Picker("content accent", selection: $activeStyle.answerScheme) {
-                        Text("dark")
-                            .tag(Optional<ColorScheme>.some(.dark))
-                        Text("light")
-                            .tag(Optional<ColorScheme>.some(.light))
-                        Text("default")
-                            .tag(Optional<ColorScheme>.none)
-                    }
-                    .pickerStyle(.automatic)
-                    .padding(.horizontal, -4)
-                    .padding(.leading, activeStyle.answerScheme == .none ? -6 : 0)
-                    .disabled(!activeStyle.styleIsValid)
-                }
+                BackgroundColorPicker(selection: $activeStyle.color, accentSchme: $activeStyle.answerScheme, name: answer.name, label: "answer background color")
                 TextField("glyth", text: $activeStyle.shape)
             }
         }

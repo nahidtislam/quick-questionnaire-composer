@@ -40,9 +40,17 @@ struct QuestionEditorView: View {
                 .matchedGeometryEffect(id: question.generateNamespace(for: .allCorrectAnswersRequired), in: qSpace)
                 .font(.caption.width(.condensed))
             answerInfo
-            ColorPicker(selection: $vm.questionColor, supportsOpacity: false) {
-                Text("bg")
-            }
+            BackgroundColorPicker(selection: $vm.questionBgColorInput, accentSchme: $vm.questionBgAccentColorInput, name: vm.titleInput, label: "question background color")
+//                .onChange(of: vm.questionBgColorInput) { newValue in
+//                    if vm.isValid {
+//                        question.bgColorHex = newValue.hexValue
+//                    }
+//                }
+//                .onChange(of: vm.questionBgAccentColorInput) { newValue in
+//                    if vm.isValid {
+//
+//                    }
+//                }
             marksTextField
             
             HStack(spacing: 40) {
@@ -52,33 +60,35 @@ struct QuestionEditorView: View {
                 }
                 .disabled(!vm.isValid)
             }
-        }.padding(10)
-            .background(bg)
-            .cornerRadius(20)
-            .padding(10)
-            .background(bg.opacity(0.5))
-            .cornerRadius(25)
-            .onAppear {
-                vm.titleInput = question.title
-                if let descprition = question.subtitle {
-                    vm.subtitleIsEnabled = true
-                    vm.subtitleInput = descprition
-                }
-                if question.marks > 0 {
-                    let mark: String
-                    if question.marks == Double(Int(question.marks)) {
-                        mark = "\(Int(question.marks))"
-                    } else {
-                        mark = "\(question.marks)"
-                    }
-                    
-                    vm.availableMarksInput = mark
-                    
-                }
-                vm.possibleAnswers = question.possibleAnswers
-                vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
-                vm.questionUUID = question.id
+        }
+        .padding(10)
+        .background(bg)
+        .cornerRadius(20)
+        .padding(10)
+        .background(bg.opacity(0.5))
+        .cornerRadius(25)
+        .onAppear {
+            vm.titleInput = question.title
+            if let descprition = question.subtitle {
+                vm.subtitleIsEnabled = true
+                vm.subtitleInput = descprition
             }
+            if question.marks > 0 {
+                let mark: String
+                if question.marks == Double(Int(question.marks)) {
+                    mark = "\(Int(question.marks))"
+                } else {
+                    mark = "\(question.marks)"
+                }
+                
+                vm.availableMarksInput = mark
+                
+            }
+            vm.possibleAnswers = question.possibleAnswers
+            vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
+            vm.questionUUID = question.id
+            vm.questionBgColorInput = Color(hex: question.bgColorHex ?? "", colorSpace: .displayP3) ?? .clear
+        }
     }
     
     private var answerInfo:some View {
@@ -90,7 +100,7 @@ struct QuestionEditorView: View {
     }
     
     private var bg: Color {
-        Color(hex: question.bgColorHex ?? "", colorSpace: .displayP3) ?? QuestionView.defaultBG(scheme: colorScheme)
+        Color(hex: vm.questionBgColorOutput ?? "", colorSpace: .displayP3) ?? QuestionView.defaultBG(scheme: colorScheme)
     }
     
     private var answerAnimation: Animation {
@@ -100,8 +110,8 @@ struct QuestionEditorView: View {
     private var lineSeperator: some View {
         Rectangle()
             .frame(height: 4)
-            .foregroundColor(.init(hex: "#bbeebb"))
             .padding(.horizontal, -10)
+            .foregroundColor(.init(hex: "#bbeebb"))
     }
     
     private var marksTextField: some View {
@@ -165,9 +175,7 @@ struct QuestionEditorView: View {
                     }
                 }
             }
-            .onChange(of: vm.questionOutput, perform: { newValue in
-                if vm.isValid { question = newValue }
-            })
+            .onChange(of: vm.questionOutput, perform: update)
             .frame(height: answerScrollViewHeight)
             .cornerRadius(16)
             answerListControls
@@ -175,6 +183,10 @@ struct QuestionEditorView: View {
         .padding(10)
         .background(answerContainerColor)
         .cornerRadius(20)
+    }
+    
+    private func update(to newValue: QuestionCard) {
+        if vm.isValid { question = newValue }
     }
     
     private var answerListControls: some View {
@@ -268,7 +280,8 @@ extension QuestionEditorView {
         @Published var subtitleIsEnabled = false
         @Published var allCorrectAnswersRequired = false
         
-        @Published var questionColor = Color.clear
+        @Published var questionBgColorInput = Color.clear
+        @Published var questionBgAccentColorInput: ColorScheme?
         
         @Published var possibleAnswers = [QuestionCard.Answer]()
         @Published var deletedAnswers = [QuestionCard.Answer]()
@@ -341,6 +354,15 @@ extension QuestionEditorView {
             .init(availableMarksInput) ?? -1
         }
         
+        var questionBgColorOutput: String? {
+            guard questionBgColorInput != .clear else { return nil }
+            return questionBgColorInput.hexValue
+        }
+        
+        var questionBgAccentColorOutput: String? {
+            questionBgAccentColorInput?.schemeDesc
+        }
+        
         var correctAnsCount: Int {
             possibleAnswers.filter({ $0.isCorrect }).count
         }
@@ -359,6 +381,7 @@ extension QuestionEditorView {
                 title: titleInput,
                 subtitle: subtitleOutput,
                 marks: availableMarksOutput,
+                bgColorHex: questionBgColorOutput,
                 possibleAnswers: possibleAnswers,
                 allCorrectAnswersRequired: allCorrectAnswersRequired
             )
