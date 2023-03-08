@@ -238,7 +238,7 @@ struct QuestionEditorView: View {
         let inverse = maxDistance / compliment // 80 / 0.2 = 400
         
         // 0.8 + min(0.2, -ansOffset[item.id, default: 0] / 400)
-        let len = initialScale + min(compliment, value / inverse)
+        let len = initialScale + abs(min(compliment, value / inverse))
         
         return .init(width: len, height: len)
     }
@@ -258,8 +258,8 @@ struct QuestionEditorView: View {
             .foregroundColor(.white)
             .background(Color.red)
             .cornerRadius(.infinity)
-            .offset(x: 16 * ansOffset[item.id, default: 0] / 80)
-            .scaleEffect(deleteButton(initialScale: 0.4, with: -ansOffset[item.id, default: 0], for: 80))
+            .offset(x: ansOffset[item.id, default: 0] / 5)
+            .scaleEffect(deleteButton(initialScale: 0.6, with: -ansOffset[item.id, default: 0], for: maxAnswerOffset))
             AnswerEditor(answer: item)
                 .padding(8)
                 .styleTransition(.spring(response: 0.3, dampingFraction: 0.5, blendDuration: 0.3))
@@ -275,8 +275,22 @@ struct QuestionEditorView: View {
                 .gesture(
                     DragGesture()
                         .onChanged{ v in
-                            ansOffset[item.id] = v.translation.width
-                            print("0.8 + min(0.2, \(-ansOffset[item.id, default: 0] / 400)) : \(-ansOffset[item.id, default: 0] > 80 ? "yes" : "no")")
+                            let w: CGFloat = {
+                                let width = v.translation.width
+                                let absW = abs(width)
+                                if absW <= maxAnswerOffset {
+                                    return width
+                                } else {
+                                    let diff = absW - maxAnswerOffset
+                                    var output = maxAnswerOffset + diff / 4
+                                    if width < 0 { output *= -1 }
+                                    
+                                    return output
+                                }
+                            }()
+                            withAnimation(abs(ansOffset[item.id, default: 0]) == maxAnswerOffset ? .default : .none) {
+                                ansOffset[item.id] = w
+                            }
                         }
                         .onEnded{ v in
                             let threshold: CGFloat = -maxAnswerOffset
