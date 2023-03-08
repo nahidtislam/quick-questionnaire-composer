@@ -12,7 +12,8 @@ struct TickBox: View {
     var title: String
     @Binding var isOn: Bool
     
-    var textColor = Color.primary
+    var titleColor: Color?
+    var tickColor: Color?
     
     var imagePair: [Bool : Image]?
     
@@ -24,7 +25,7 @@ struct TickBox: View {
         } label: {
             HStack {
                 Text(title)
-                    .foregroundColor(textColor)
+                    .foregroundColor(titleColor)
                 Spacer()
                 imagePair?[isOn] ?? [true : Image(systemName: "checkmark")][isOn]
 //                if let imagePair {
@@ -34,11 +35,19 @@ struct TickBox: View {
 //                }
             }
         }
+        .foregroundColor(tickColor)
     }
     
-    func textColor(_ color: Color) -> Self {
+    func titleColor(_ color: Color) -> Self {
         var new = self
-        new.textColor = color
+        new.titleColor = color
+        
+        return new
+    }
+    
+    func tickColor(_ color: Color) -> Self {
+        var new = self
+        new.tickColor = color
         
         return new
     }

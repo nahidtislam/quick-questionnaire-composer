@@ -42,6 +42,8 @@ struct AnswerEditor: View {
             }
             .transition(.move(edge: .bottom))
             TickBox(title: "is correct", isOn: $answer.isCorrect, imagePair: [true : Image(systemName: "checkmark.circle.fill"), false : Image(systemName: "tag.slash")])
+                .tickColor(accentColor)
+                .titleColor(accentColor)
 //            Toggle("is correct", isOn: $answer.isCorrect)
 //                .toggleStyle(.button)
             

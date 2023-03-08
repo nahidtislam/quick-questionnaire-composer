@@ -37,8 +37,8 @@ struct QuestionCard: Identifiable {
             default: return nil
             }
         }
-        var accentGraphic: Color {
-            guard let scheme = accentScheme else { return .primary }
+        var accentGraphic: Color? {
+            guard let scheme = accentScheme else { return nil }
             return scheme == .dark ? .black : .white
         }
     }

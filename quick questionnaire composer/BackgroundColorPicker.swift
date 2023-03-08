@@ -20,7 +20,7 @@ struct BackgroundColorPicker: View {
         HStack {
             if selection != .clear {
                 Button {
-                    withAnimation { selection = .clear }
+                    withAnimation { selection = .clear; accentSchme = nil }
                 } label: {
                     Text("clear")
                         .font(.footnote.weight(.bold).width(.condensed))
