@@ -89,7 +89,6 @@ struct QuestionEditorView: View {
     private var answerInfo:some View {
         VStack {
             display("answers", value: vm.possibleAnswers.count)
-                .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
             display("correct", value: vm.correctAnsCount)
         }
     }
@@ -123,8 +122,10 @@ struct QuestionEditorView: View {
     private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num) -> some View {
         HStack {
             Text("\(descripton): ")
+                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_label", in: qSpace)
             Spacer()
             Text(value.description)
+                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_value", in: qSpace)
         }
     }
     

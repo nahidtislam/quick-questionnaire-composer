@@ -42,7 +42,7 @@ struct QuestionView: View {
             }
             HStack {
                 Text("possible answers: ")
-                    .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(text)", in: qSpace)
+                    .matchedGeometryEffect(id: "q_card-\(question.id):describing=answers_label", in: qSpace)
                     .onTapGesture {
                         withAnimation(.spring()) {
                             showingAnswers.toggle()
@@ -50,7 +50,7 @@ struct QuestionView: View {
                     }
                 Spacer()
                 Text("\(question.possibleAnswers.count)")
-                    .matchedGeometryEffect(id: "q_card-\(question.id):possible_answers(value)", in: qSpace)
+                    .matchedGeometryEffect(id: "q_card-\(question.id):describing=answers_value", in: qSpace)
             }
             if question.possibleAnswers.count > 2 {
                 HStack {
