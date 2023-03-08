@@ -9,6 +9,9 @@ import SwiftUI
 
 struct QuestionEditorView: View {
     
+    let maxAnswerOffset: CGFloat = 80
+    
+    
     @Environment(\.colorScheme) var colorScheme
     @Environment(\.presentationMode) var presentationMode
     
@@ -17,7 +20,8 @@ struct QuestionEditorView: View {
     var qSpace: Namespace.ID
     @StateObject var vm = ViewModel()
     
-    @State var ansOffset: [UUID:CGFloat] = [:]
+    @State private var ansOffset: [UUID:CGFloat] = [:]
+    @State private var autoScrollTo = -1
     
     var body: some View {
         VStack(alignment: .center) {
@@ -51,6 +55,7 @@ struct QuestionEditorView: View {
                 .disabled(!vm.isValid)
             }
         }
+        .foregroundColor(vm.questionOutput.bgStyle?.accentGraphic)
         .padding(10)
         .background(bg)
         .cornerRadius(20)
@@ -101,7 +106,7 @@ struct QuestionEditorView: View {
         Rectangle()
             .frame(height: 4)
             .padding(.horizontal, -10)
-            .foregroundColor(.init(hex: "#bbeebb"))
+            .foregroundColor(.init(hex: vm.isValid ? "#bbeebb" : "#f1a5ad", colorSpace: .displayP3))
     }
     
     private var marksTextField: some View {
@@ -144,8 +149,19 @@ struct QuestionEditorView: View {
     var answerBox: some View {
         VStack {
             ScrollView {
-                ForEach($vm.possibleAnswers) { item in
-                    populate(answer: item)
+                ScrollViewReader { proxy in
+                    ForEach($vm.possibleAnswers) { item in
+                        populate(answer: item)
+                    }
+                    .onChange(of: autoScrollTo) { newValue in
+                        guard newValue >= 0 else { return }
+                        withAnimation {
+                            proxy.scrollTo(vm.possibleAnswers[newValue].id)
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            autoScrollTo = -1
+                        }
+                    }
                 }
             }
             .onChange(of: vm.questionOutput, perform: update)
@@ -154,7 +170,7 @@ struct QuestionEditorView: View {
             answerListControls
         }
         .padding(10)
-        .background(answerContainerColor)
+        .background(answerContainerColor.opacity(vm.questionBgColorOutput == nil ? 1 : 0.6))
         .cornerRadius(20)
     }
     
@@ -167,28 +183,49 @@ struct QuestionEditorView: View {
             Button {
                 withAnimation(answerAnimation) { vm.performUndo() }
             } label: {
-                Image(systemName: "arrow.uturn.backward.circle")
+                Label("undo action", systemImage: "arrow.uturn.backward.circle")
+                    .labelStyle(.iconOnly)
                     .font(buttonActionStyle)
             }
             .disabled(vm.lastAction == .delete ? vm.deletedAnswers.count == 0 : vm.possibleAnswers.count == 0)
             if vm.possibleAnswers.count != 0 {
+                Button {
+                    autoScrollTo = 0
+                } label: {
+                    Label("scroll answers to top", systemImage: "arrow.up.square.fill")
+                        .labelStyle(.iconOnly)
+                        .font(buttonActionStyle)
+                }
                 Spacer()
             }
             Button(role: .destructive) {
-                withAnimation(answerAnimation) { vm.deleteLastAnswer() }
+                withAnimation(answerAnimation) {
+                    vm.deleteLastAnswer()
+                    scrollAnswersToLast()
+                }
             } label: {
-                Image(systemName: "minus.rectangle.fill")
+                Label("delete answer", systemImage: "minus.rectangle.fill")
+                    .labelStyle(.iconOnly)
                     .font(buttonActionStyle)
             }
             .disabled(vm.possibleAnswers.count == 0)
             Button {
-                withAnimation(answerAnimation) { vm.addBlankAnswer() }
+                withAnimation(answerAnimation) {
+                    vm.addBlankAnswer()
+                    autoScrollTo = vm.possibleAnswers.endIndex - 1
+                }
             } label: {
-                Image(systemName: "plus.rectangle.fill")
+                Label("add answer", systemImage: "plus.rectangle.fill")
+                    .labelStyle(.iconOnly)
                     .font(buttonActionStyle)
             }
             
         }
+    }
+    
+    private func scrollAnswersToLast() {
+        guard vm.possibleAnswers.count > 0 else { return }
+        autoScrollTo = vm.possibleAnswers.endIndex - 1
     }
     
     private var answerContainerColor: Color? {
@@ -241,7 +278,7 @@ struct QuestionEditorView: View {
                             print("0.8 + min(0.2, \(-ansOffset[item.id, default: 0] / 400)) : \(-ansOffset[item.id, default: 0] > 80 ? "yes" : "no")")
                         }
                         .onEnded{ v in
-                            let threshold: CGFloat = -80
+                            let threshold: CGFloat = -maxAnswerOffset
                             let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
                             
                             withAnimation {
