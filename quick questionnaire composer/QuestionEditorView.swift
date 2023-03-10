@@ -188,7 +188,7 @@ struct QuestionEditorView: View {
                     .labelStyle(.iconOnly)
                     .font(buttonActionStyle)
             }
-            .disabled(vm.lastAction == .delete ? vm.deletedAnswers.count == 0 : vm.possibleAnswers.count == 0)
+            .disabled(vm.lastActions.isEmpty)
             if vm.possibleAnswers.count != 0 {
                 Button {
                     autoScrollTo = 0
@@ -337,9 +337,8 @@ extension QuestionEditorView {
         @Published var questionBgAccentColorInput: ColorScheme?
         
         @Published var possibleAnswers = [QuestionCard.Answer]()
-        @Published var deletedAnswers = [QuestionCard.Answer]()
         
-        var lastAction: DataAction = .delete
+        var lastActions = [DataAction]()
         @Published var stylerIsShownForIndexes = Set<Int>()
         
         var subtitleOutput: String? {
@@ -357,7 +356,12 @@ extension QuestionEditorView {
         
         func add(answer: QuestionCard.Answer) {
             possibleAnswers.append(answer)
-            lastAction = .add
+            lastActions.append(.add)
+        }
+        
+        func add(answer: QuestionCard.Answer, at index: Int) {
+            possibleAnswers.insert(answer, at: index)
+            lastActions.append(.add)
         }
         
         func deleteLastAnswer() {
@@ -372,25 +376,30 @@ extension QuestionEditorView {
         func delete(at index: Int) {
             let deleted = possibleAnswers.remove(at: index)
             stylerIsShownForIndexes.remove(index)
-            deletedAnswers.append(deleted)
-            lastAction = .delete
+            lastActions.append(.delete(deleted, index))
         }
         
         func delete(atOffsets indexSet: IndexSet) {
             possibleAnswers.remove(atOffsets: indexSet)
 //            stylerIsShownForIndexes.remove(at: Set<Int>.Index(indexSet))
-            lastAction = .delete
+            fatalError("not supported")
+//            lastActions.append(.deleteBulk(indexSet))
         }
         
         func performUndo() {
-            switch lastAction {
+            switch lastActions.last! {
             case .add:
                 deleteLastAnswer()
 //                lastAction = .add
-            case .delete:
-                add(answer: deletedAnswers.removeLast())
+                lastActions.removeLast()
+            case .delete(let recoveredAnswer, let index):
+                add(answer: recoveredAnswer, at: index)
+                lastActions.removeLast()
 //                lastAction = .delete
+            case .deletedBulk(let indexSet): fatalError("not supported for anything with \(indexSet)")
+                
             }
+            lastActions.removeLast()
         }
         
         func answerStyler(isAppearing: Bool, for uuid: UUID) {
@@ -447,7 +456,7 @@ extension QuestionEditorView {
         }
         
         enum DataAction {
-        case delete, add
+            case delete(QuestionCard.Answer, Int), deletedBulk([QuestionCard.Answer]), add
         }
     }
 }
