@@ -25,26 +25,26 @@ struct QuestionEditorView: View {
     
     var body: some View {
         VStack(alignment: .center) {
-            TextField("title", text: $vm.titleInput)
+            TextField("title", text: $vm.inputs.title)
                 .matchedGeometryEffect(id: makeNamespace(for: .title), in: qSpace)
                 .font(.title)
             HStack {
-                TextField("description", text: $vm.subtitleInput)
+                TextField("description", text: $vm.inputs.subtitle)
                     .matchedGeometryEffect(id: makeNamespace(for: .subtitle), in: qSpace)
-                    .disabled(!vm.subtitleIsEnabled)
+                    .disabled(!vm.inputs.subtitleIsEnabled)
                     .font(.headline)
-                Toggle("", isOn: $vm.subtitleIsEnabled)
+                Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
             }
             lineSeperator
             answerBox
                 .transition(.push(from: .top))
             lineSeperator
             
-            Toggle("all correct answers required to get marks", isOn: $vm.allCorrectAnswersRequired)
+            Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
                 .matchedGeometryEffect(id: question.generateNamespace(for: .allCorrectAnswersRequired), in: qSpace)
                 .font(.caption.width(.condensed))
             answerInfo
-            BackgroundColorPicker(selection: $vm.questionBgColorInput, accentSchme: $vm.questionBgAccentColorInput, name: vm.titleInput, label: "question background color")
+            BackgroundColorPicker(selection: $vm.inputs.bgColor, accentSchme: $vm.inputs.bgAccent, name: vm.inputs.title, label: "question background color")
             marksTextField
             
             HStack(spacing: 40) {
@@ -55,7 +55,7 @@ struct QuestionEditorView: View {
                 .disabled(!vm.isValid)
             }
         }
-        .foregroundColor(vm.questionOutput.bgStyle?.accentGraphic)
+        .foregroundColor(vm.inputs.result.bgStyle?.accentGraphic)
         .padding(10)
         .background(bg)
         .cornerRadius(20)
@@ -63,38 +63,39 @@ struct QuestionEditorView: View {
         .background(bg.opacity(0.5))
         .cornerRadius(25)
         .onAppear {
-            vm.titleInput = question.title
-            if let descprition = question.subtitle {
-                vm.subtitleIsEnabled = true
-                vm.subtitleInput = descprition
-            }
-            if question.marks > 0 {
-                let mark: String
-                if question.marks == Double(Int(question.marks)) {
-                    mark = "\(Int(question.marks))"
-                } else {
-                    mark = "\(question.marks)"
-                }
-                
-                vm.availableMarksInput = mark
-                
-            }
-            vm.possibleAnswers = question.possibleAnswers
-            vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
-            vm.questionUUID = question.id
-            vm.questionBgColorInput = Color(hex: question.bgStyle?.color ?? "", colorSpace: .displayP3) ?? .clear
+            vm.inputs = Inputs(questionCard: question)
+//            vm.titleInput = question.title
+//            if let descprition = question.subtitle {
+//                vm.subtitleIsEnabled = true
+//                vm.subtitleInput = descprition
+//            }
+//            if question.marks > 0 {
+//                let mark: String
+//                if question.marks == Double(Int(question.marks)) {
+//                    mark = "\(Int(question.marks))"
+//                } else {
+//                    mark = "\(question.marks)"
+//                }
+//
+//                vm.availableMarksInput = mark
+//
+//            }
+//            vm.possibleAnswers = question.possibleAnswers
+//            vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
+//            vm.questionUUID = question.id
+//            vm.questionBgColorInput = Color(hex: question.bgStyle?.color ?? "", colorSpace: .displayP3) ?? .clear
         }
     }
     
     private var answerInfo:some View {
         VStack {
-            display("answers", value: vm.possibleAnswers.count)
+            display("answers", value: vm.inputs.answers.count)
             display("correct", value: vm.correctAnsCount)
         }
     }
     
     private var bg: Color {
-        Color(hex: vm.questionBgColorOutput ?? "", colorSpace: .displayP3) ?? QuestionView.defaultBG(scheme: colorScheme)
+        Color(hex: vm.inputs.bgStyle?.color ?? "", colorSpace: .displayP3) ?? QuestionView.defaultBG(scheme: colorScheme)
     }
     
     private var answerAnimation: Animation {
@@ -112,7 +113,7 @@ struct QuestionEditorView: View {
         HStack {
             Text("marks: ")
             Spacer()
-            TextField("\(vm.correctAnsCount)", text: $vm.availableMarksInput)
+            TextField("\(vm.correctAnsCount)", text: $vm.inputs.marks)
                 .multilineTextAlignment(.trailing)
         }
     }
@@ -144,20 +145,20 @@ struct QuestionEditorView: View {
         
         let maxCells: CGFloat = 3
         
-        return cellSize * min(CGFloat(vm.possibleAnswers.count), maxCells) + stylerSize
+        return cellSize * min(CGFloat(vm.inputs.answers.count), maxCells) + stylerSize
     }
     
     var answerBox: some View {
         VStack {
             ScrollView {
                 ScrollViewReader { proxy in
-                    ForEach($vm.possibleAnswers) { item in
+                    ForEach($vm.inputs.answers) { item in
                         populate(answer: item)
                     }
                     .onChange(of: autoScrollTo) { newValue in
                         guard newValue >= 0 else { return }
                         withAnimation {
-                            proxy.scrollTo(vm.possibleAnswers[newValue].id)
+                            proxy.scrollTo(vm.inputs.answers[newValue].id)
                         }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                             autoScrollTo = -1
@@ -165,13 +166,13 @@ struct QuestionEditorView: View {
                     }
                 }
             }
-            .onChange(of: vm.questionOutput, perform: update)
+            .onChange(of: vm.inputs.result, perform: update)
             .frame(height: answerScrollViewHeight)
             .cornerRadius(16)
             answerListControls
         }
         .padding(10)
-        .background(answerContainerColor.opacity(vm.questionBgColorOutput == nil ? 1 : 0.6))
+        .background(answerContainerColor.opacity(vm.inputs.bgStyle == nil ? 1 : 0.6))
         .cornerRadius(20)
     }
     
@@ -189,7 +190,7 @@ struct QuestionEditorView: View {
                     .font(buttonActionStyle)
             }
             .disabled(vm.lastActions.isEmpty)
-            if vm.possibleAnswers.count != 0 {
+            if vm.inputs.answers.count != 0 {
                 Button {
                     autoScrollTo = 0
                 } label: {
@@ -209,11 +210,11 @@ struct QuestionEditorView: View {
                     .labelStyle(.iconOnly)
                     .font(buttonActionStyle)
             }
-            .disabled(vm.possibleAnswers.count == 0)
+            .disabled(vm.inputs.answers.count == 0)
             Button {
                 withAnimation(answerAnimation) {
                     vm.addBlankAnswer()
-                    autoScrollTo = vm.possibleAnswers.endIndex - 1
+                    autoScrollTo = vm.inputs.answers.endIndex - 1
                 }
             } label: {
                 Label("add answer", systemImage: "plus.rectangle.fill")
@@ -225,8 +226,8 @@ struct QuestionEditorView: View {
     }
     
     private func scrollAnswersToLast() {
-        guard vm.possibleAnswers.count > 0 else { return }
-        autoScrollTo = vm.possibleAnswers.endIndex - 1
+        guard vm.inputs.answers.count > 0 else { return }
+        autoScrollTo = vm.inputs.answers.endIndex - 1
     }
     
     private var answerContainerColor: Color? {
@@ -325,29 +326,10 @@ extension QuestionEditorView {
     class ViewModel: ObservableObject {
         var questionUUID = UUID()
         
-        @Published var titleInput = ""
-        @Published var subtitleInput = ""
-        
-        @Published var availableMarksInput = ""
-        
-        @Published var subtitleIsEnabled = false
-        @Published var allCorrectAnswersRequired = false
-        
-        @Published var questionBgColorInput = Color.clear
-        @Published var questionBgAccentColorInput: ColorScheme?
-        
-        @Published var possibleAnswers = [QuestionCard.Answer]()
+        @Published var inputs = Inputs(id: UUID())
         
         var lastActions = [DataAction]()
         @Published var stylerIsShownForIndexes = Set<Int>()
-        
-        var subtitleOutput: String? {
-            if subtitleIsEnabled && subtitleInput != "" {
-                return subtitleInput
-            }  else {
-                return nil
-            }
-        }
         
         func addBlankAnswer() {
             let ans = QuestionCard.Answer(name: "", style: nil, isCorrect: false)
@@ -355,32 +337,32 @@ extension QuestionEditorView {
         }
         
         func add(answer: QuestionCard.Answer) {
-            possibleAnswers.append(answer)
+            inputs.answers.append(answer)
             lastActions.append(.add)
         }
         
         func add(answer: QuestionCard.Answer, at index: Int) {
-            possibleAnswers.insert(answer, at: index)
+            inputs.answers.insert(answer, at: index)
             lastActions.append(.add)
         }
         
         func deleteLastAnswer() {
-            delete(at: possibleAnswers.count - 1)
+            delete(at: inputs.answers.count - 1)
         }
         
         func delete(at id: UUID) {
-            let index = possibleAnswers.firstIndex(where: { $0.id == id})!
+            let index = inputs.answers.firstIndex(where: { $0.id == id})!
             delete(at: index)
         }
         
         func delete(at index: Int) {
-            let deleted = possibleAnswers.remove(at: index)
+            let deleted = inputs.answers.remove(at: index)
             stylerIsShownForIndexes.remove(index)
             lastActions.append(.delete(deleted, index))
         }
         
         func delete(atOffsets indexSet: IndexSet) {
-            possibleAnswers.remove(atOffsets: indexSet)
+            inputs.answers.remove(atOffsets: indexSet)
 //            stylerIsShownForIndexes.remove(at: Set<Int>.Index(indexSet))
             fatalError("not supported")
 //            lastActions.append(.deleteBulk(indexSet))
@@ -403,7 +385,7 @@ extension QuestionEditorView {
         }
         
         func answerStyler(isAppearing: Bool, for uuid: UUID) {
-            let index = possibleAnswers.firstIndex(where: { $0.id == uuid })!
+            let index = inputs.answers.firstIndex(where: { $0.id == uuid })!
             
             if isAppearing {
                 stylerIsShownForIndexes.insert(index)
@@ -412,51 +394,68 @@ extension QuestionEditorView {
             }
         }
         
-        var availableMarksOutput: Double {
-            .init(availableMarksInput) ?? -1
-        }
-        
-        var questionBgColorOutput: String? {
-            guard questionBgColorInput != .clear else { return nil }
-            return questionBgColorInput.hexValue
-        }
-        
-        var questionBgAccentColorOutput: String? {
-            questionBgAccentColorInput?.schemeDesc
-        }
-        
         var correctAnsCount: Int {
-            possibleAnswers.filter({ $0.isCorrect }).count
+            inputs.answers.filter({ $0.isCorrect }).count
         }
         
         var containsEmptyAnsTitile: Bool {
-            possibleAnswers.first { $0.name == "" } != nil
+            inputs.answers.first { $0.name == "" } != nil
         }
         
         var isValid: Bool {
-            correctAnsCount > 0 && availableMarksOutput > 0 && !containsEmptyAnsTitile
-        }
-        
-        var styleOutput: QuestionCard.BGStyle? {
-            guard let colorHex = questionBgColorOutput else { return nil }
-            
-                return .init(color: colorHex, accent: questionBgAccentColorOutput)
-        }
-        
-        var questionOutput: QuestionCard {
-            .init(
-                id: questionUUID,
-                title: titleInput,
-                subtitle: subtitleOutput,
-                marks: availableMarksOutput,
-                bgStyle: styleOutput,
-                possibleAnswers: possibleAnswers,
-                allCorrectAnswersRequired: allCorrectAnswersRequired
-            )
+            correctAnsCount > 0 && Double(inputs.marks) ?? 0 > 0 && !containsEmptyAnsTitile
         }
         
         enum DataAction {
             case delete(QuestionCard.Answer, Int), deletedBulk([QuestionCard.Answer]), add
         }
+    }
+    
+    struct Inputs {
+        let id: UUID
+        
+        var title = ""
+        var subtitle = ""
+        
+        var answers = [QuestionCard.Answer]()
+        
+        var marks = ""
+        
+        var subtitleIsEnabled = false
+        var allCorrectAnswersRequired = false
+        
+        var bgColor = Color.clear
+        var bgAccent: ColorScheme?
+        
+        var bgStyle: QuestionCard.BGStyle? {
+            guard let bgAccent, bgColor != .clear, let colorHex = bgColor.hexValue else { return nil }
+            return .init(color: colorHex, accent: bgAccent.schemeDesc)
+        }
+        
+        var result: QuestionCard {
+            .init(
+                id: id,
+                title: title,
+                subtitle: subtitleIsEnabled && !subtitle.isEmpty ? subtitle : nil,
+                marks: Double(marks) ?? -1,
+                bgStyle: .init(color: bgColor.hexValue!, accent: bgAccent?.schemeDesc),
+                possibleAnswers: answers,
+                allCorrectAnswersRequired: allCorrectAnswersRequired
+            )
+        }
+    }
+}
+
+extension QuestionEditorView.Inputs {
+    init(questionCard: QuestionCard) {
+        self.id = questionCard.id
+        self.title = questionCard.title
+        self.subtitle = questionCard.subtitle ?? ""
+        self.answers = questionCard.possibleAnswers
+        self.marks = String(questionCard.marks)
+        self.subtitleIsEnabled = questionCard.subtitle != nil
+        self.allCorrectAnswersRequired = questionCard.allCorrectAnswersRequired
+        self.bgColor = Color(hex: questionCard.bgStyle?.color ?? "none", colorSpace: .displayP3) ?? .clear
+        self.bgAccent = questionCard.bgStyle?.accentScheme
     }
 }

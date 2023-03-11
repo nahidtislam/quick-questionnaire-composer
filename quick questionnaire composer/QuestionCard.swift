@@ -25,16 +25,24 @@ struct QuestionCard: Identifiable {
     }
     
     struct BGStyle: Codable {
-        let color: String
-        let accent: String?
+        var color: String
+        var accent: String?
         
-        var colorGraphic: Color? { Color(hex: color, colorSpace: .displayP3) }
+        var colorGraphic: Color? {
+            get { Color(hex: color, colorSpace: .displayP3) }
+            set { color = newValue?.hexValue ?? "" }
+        }
         var accentScheme: ColorScheme? {
-            switch accent {
-            case .none: return nil
-            case "dark": return .dark
-            case "light": return .light
-            default: return nil
+            get {
+                switch accent {
+                case .none: return nil
+                case "dark": return .dark
+                case "light": return .light
+                default: return nil
+                }
+            }
+            set {
+                accent = newValue?.schemeDesc
             }
         }
         var accentGraphic: Color? {
