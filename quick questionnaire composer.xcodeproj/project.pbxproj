@@ -23,6 +23,7 @@
 		25C88DFD29A679EE0073F412 /* QuestionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25C88DFC29A679EE0073F412 /* QuestionView.swift */; };
 		25F127C929BCC225002DCC87 /* String+NeatDecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F127C829BCC225002DCC87 /* String+NeatDecimal.swift */; };
 		25F127CB29BCC734002DCC87 /* ConditionalTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F127CA29BCC734002DCC87 /* ConditionalTextBox.swift */; };
+		25F127CD29BCE47C002DCC87 /* ButtonNeedingConfimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F127CC29BCE47C002DCC87 /* ButtonNeedingConfimation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,7 @@
 		25C88DFC29A679EE0073F412 /* QuestionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionView.swift; sourceTree = "<group>"; };
 		25F127C829BCC225002DCC87 /* String+NeatDecimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+NeatDecimal.swift"; sourceTree = "<group>"; };
 		25F127CA29BCC734002DCC87 /* ConditionalTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalTextBox.swift; sourceTree = "<group>"; };
+		25F127CC29BCE47C002DCC87 /* ButtonNeedingConfimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonNeedingConfimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 				2548BB0C29B39F63005A03DA /* TickBox.swift */,
 				2548BB0E29B5F21F005A03DA /* BackgroundColorPicker.swift */,
 				25F127CA29BCC734002DCC87 /* ConditionalTextBox.swift */,
+				25F127CC29BCE47C002DCC87 /* ButtonNeedingConfimation.swift */,
 			);
 			path = "quick questionnaire composer";
 			sourceTree = "<group>";
@@ -187,6 +190,7 @@
 				25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */,
 				2548BB0B29B2169A005A03DA /* AnswerStyler.swift in Sources */,
 				2548BB0729ACCC8B005A03DA /* AnswerEditor.swift in Sources */,
+				25F127CD29BCE47C002DCC87 /* ButtonNeedingConfimation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

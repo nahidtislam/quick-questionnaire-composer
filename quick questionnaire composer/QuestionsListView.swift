@@ -34,10 +34,6 @@ struct QuestionsListView: View {
                             }
                         }
                     }
-                Button("clear") {
-                    vm.cards.removeAll()
-                    vm.editingAt = nil
-                }
             }
         }
     }
@@ -69,6 +65,13 @@ struct QuestionsListView: View {
 //                    editingForUUID = nil
 //                }
             }
+            
+            ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "") {
+                
+                vm.cards.removeAll()
+                vm.editingAt = nil
+            }
+            
         }
     }
     
