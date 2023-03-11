@@ -428,8 +428,8 @@ extension QuestionEditorView {
         var bgAccent: ColorScheme?
         
         var bgStyle: QuestionCard.BGStyle? {
-            guard let bgAccent, bgColor != .clear, let colorHex = bgColor.hexValue else { return nil }
-            return .init(color: colorHex, accent: bgAccent.schemeDesc)
+            guard bgColor != .clear, let colorHex = bgColor.hexValue else { return nil }
+            return .init(color: colorHex, accent: bgAccent?.schemeDesc)
         }
         
         var result: QuestionCard {
@@ -438,7 +438,7 @@ extension QuestionEditorView {
                 title: title,
                 subtitle: subtitleIsEnabled && !subtitle.isEmpty ? subtitle : nil,
                 marks: Double(marks) ?? -1,
-                bgStyle: .init(color: bgColor.hexValue!, accent: bgAccent?.schemeDesc),
+                bgStyle: bgStyle,
                 possibleAnswers: answers,
                 allCorrectAnswersRequired: allCorrectAnswersRequired
             )
@@ -452,7 +452,7 @@ extension QuestionEditorView.Inputs {
         self.title = questionCard.title
         self.subtitle = questionCard.subtitle ?? ""
         self.answers = questionCard.possibleAnswers
-        self.marks = String(questionCard.marks)
+        self.marks = questionCard.marks < 0 ? "" : String(neatDecimal: questionCard.marks)
         self.subtitleIsEnabled = questionCard.subtitle != nil
         self.allCorrectAnswersRequired = questionCard.allCorrectAnswersRequired
         self.bgColor = Color(hex: questionCard.bgStyle?.color ?? "none", colorSpace: .displayP3) ?? .clear

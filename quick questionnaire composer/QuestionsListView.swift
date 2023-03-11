@@ -24,9 +24,16 @@ struct QuestionsListView: View {
             } else {
                 cardList
                     .navigationTitle("questions maker")
-                Button("add") {
-                    vm.addQuestion()
-                }
+                    .toolbar {
+                        ToolbarItemGroup(placement: .navigationBarTrailing) {
+                            Button {
+                                vm.addQuestion()
+                                
+                            } label: {
+                                Label("add question", systemImage: "rectangle.stack.badge.plus")
+                            }
+                        }
+                    }
                 Button("clear") {
                     vm.cards.removeAll()
                     vm.editingAt = nil
