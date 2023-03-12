@@ -26,22 +26,16 @@ struct QuestionEditorView: View {
     var body: some View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.inputs.title)
-                .matchedGeometryEffect(id: makeNamespace(for: .title), in: qSpace)
                 .font(.title)
             HStack {
                 TextField("description", text: $vm.inputs.subtitle)
-                    .matchedGeometryEffect(id: makeNamespace(for: .subtitle), in: qSpace)
                     .disabled(!vm.inputs.subtitleIsEnabled)
                     .font(.headline)
                 Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
             }
             lineSeperator
-            answerBox
-                .transition(.push(from: .top))
-            lineSeperator
             
             Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
-                .matchedGeometryEffect(id: question.generateNamespace(for: .allCorrectAnswersRequired), in: qSpace)
                 .font(.caption.width(.condensed))
             answerInfo
             BackgroundColorPicker(selection: $vm.inputs.bgColor, accentSchme: $vm.inputs.bgAccent, name: vm.inputs.title, label: "question background color")
@@ -57,33 +51,13 @@ struct QuestionEditorView: View {
         }
         .foregroundColor(vm.inputs.result.bgStyle?.accentGraphic)
         .padding(10)
-        .background(bg)
+        .background(bg.matchedGeometryEffect(id: "q_card-\(question.id):bg", in: qSpace))
         .cornerRadius(20)
         .padding(10)
-        .background(bg.opacity(0.5))
+        .background(bg.opacity(0.5).matchedGeometryEffect(id: "q_card-\(question.id):bg_outer_1", in: qSpace))
         .cornerRadius(25)
         .onAppear {
             vm.inputs = Inputs(questionCard: question)
-//            vm.titleInput = question.title
-//            if let descprition = question.subtitle {
-//                vm.subtitleIsEnabled = true
-//                vm.subtitleInput = descprition
-//            }
-//            if question.marks > 0 {
-//                let mark: String
-//                if question.marks == Double(Int(question.marks)) {
-//                    mark = "\(Int(question.marks))"
-//                } else {
-//                    mark = "\(question.marks)"
-//                }
-//
-//                vm.availableMarksInput = mark
-//
-//            }
-//            vm.possibleAnswers = question.possibleAnswers
-//            vm.allCorrectAnswersRequired = question.allCorrectAnswersRequired
-//            vm.questionUUID = question.id
-//            vm.questionBgColorInput = Color(hex: question.bgStyle?.color ?? "", colorSpace: .displayP3) ?? .clear
         }
     }
     
@@ -123,10 +97,10 @@ struct QuestionEditorView: View {
     private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num) -> some View {
         HStack {
             Text("\(descripton): ")
-                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_label", in: qSpace)
+//                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_label", in: qSpace)
             Spacer()
             Text(value.description)
-                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_value", in: qSpace)
+//                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_value", in: qSpace)
         }
     }
     
@@ -148,7 +122,7 @@ struct QuestionEditorView: View {
         return cellSize * min(CGFloat(vm.inputs.answers.count), maxCells) + stylerSize
     }
     
-    var answerBox: some View {
+    private var answerBox: some View {
         VStack {
             ScrollView {
                 ScrollViewReader { proxy in

@@ -27,7 +27,9 @@ struct QuestionsListView: View {
                     .toolbar {
                         ToolbarItemGroup(placement: .navigationBarTrailing) {
                             Button {
-                                vm.addQuestion()
+                                withAnimation {
+                                    vm.addQuestion()
+                                }
                                 
                             } label: {
                                 Label("add question", systemImage: "rectangle.stack.badge.plus")
@@ -43,20 +45,17 @@ struct QuestionsListView: View {
             ForEach(cards) { card in
                 if editingForUUID == card.id {
                     QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
-                        .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
                         .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
                         .padding(12)
                 } else {
                     QuestionView(question: card, qSpace: someNamespace)
-                        .matchedGeometryEffect(id: "q_card-\(card.id)", in: someNamespace)
                         .padding(8)
                         .onTapGesture {
                             withAnimation(.spring()) {
                                 editingForUUID = card.id
                             }
                         }
-                        .transition(.push(from: .top))
-//                        .scaleEffect(x: editingForUUID == nil ? 1 : 0.95, y: editingForUUID == nil ? 1 : 0.95)
+                        .padding(editingForUUID == nil ? 0 : 12)
                 }
             }
             .onDelete { indexSet in
@@ -66,11 +65,13 @@ struct QuestionsListView: View {
 //                }
             }
             
-            ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "") {
+            ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "clear") {
                 
                 vm.cards.removeAll()
                 vm.editingAt = nil
             }
+            .transformationAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.25))
+            .padding()
             
         }
     }
@@ -80,13 +81,16 @@ struct QuestionsListView: View {
             Text("add card")
                 .font(.headline)
             Button {
-                vm.addQuestion()
+                withAnimation {
+                    vm.addQuestion()
+                }
             } label: {
                 Image(systemName: "plus.square.fill")
                     .font(.system(size: 80))
 //                    .frame(width: 80, height: 80)
             }
         }
+        .transition(.move(edge: .bottom))
     }
 }
 

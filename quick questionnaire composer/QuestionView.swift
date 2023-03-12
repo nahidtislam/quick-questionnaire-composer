@@ -79,15 +79,13 @@ struct QuestionView: View {
             }
         }
         .padding()
-        .background(bg)
+        .background(bg.matchedGeometryEffect(id: "q_card-\(question.id):bg", in: qSpace))
         .cornerRadius(16)
         .padding(12)
-//        .background(bg.saturation(0.8).brightness(0.1))
-        .background(bg.opacity(0.75))
+        .background(bg.opacity(0.75).matchedGeometryEffect(id: "q_card-\(question.id):bg_outer_1", in: qSpace))
         .cornerRadius(20)
         .padding(8)
-//        .background(bg.saturation(0.6).brightness(0.2))
-        .background(bg.opacity(0.5))
+        .background(bg.opacity(0.5).transition(.scale(scale: 0.8)))
         .cornerRadius(24)
     }
     
