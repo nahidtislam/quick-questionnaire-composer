@@ -11,6 +11,7 @@ struct QuestionsListView: View {
     
     @AppStorage("cards") var cards: [QuestionCard] = []
     @State var editingForUUID: UUID?
+    @State private var autoScrollIndex = -1
     
     @Namespace var someNamespace
     
@@ -42,37 +43,50 @@ struct QuestionsListView: View {
     
     var cardList: some View {
         ScrollView {
-            ForEach(cards) { card in
-                if editingForUUID == card.id {
-                    QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
-                        .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
-                        .padding(12)
-                } else {
-                    QuestionView(question: card, qSpace: someNamespace)
-                        .padding(8)
-                        .onTapGesture {
-                            withAnimation(.spring()) {
-                                editingForUUID = card.id
+            ScrollViewReader { proxy in
+                ForEach(cards) { card in
+                    if editingForUUID == card.id {
+                        QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
+                            .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
+                            .padding(12)
+                    } else {
+                        QuestionView(question: card, qSpace: someNamespace)
+                            .padding(8)
+                            .onTapGesture {
+                                withAnimation(.spring()) {
+                                    editingForUUID = card.id
+                                    autoScrollIndex = vm.cards.firstIndex(where: { $0.id == editingForUUID})!
+                                }
                             }
-                        }
-                        .padding(editingForUUID == nil ? 0 : 12)
+                            .padding(editingForUUID == nil ? 0 : 12)
+                    }
                 }
-            }
-            .onDelete { indexSet in
-                vm.cards.remove(atOffsets: indexSet)
-//                if vm.cards[indexSet].contains(where: { $0.id == editingForUUID }) {
-//                    editingForUUID = nil
-//                }
-            }
-            
-            ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "clear") {
+                .onDelete { indexSet in
+                    vm.cards.remove(atOffsets: indexSet)
+//                    if vm.cards[indexSet].contains(where: { $0.id == editingForUUID }) {
+//                        editingForUUID = nil
+//                    }
+                }
+                .onChange(of: autoScrollIndex) { newValue in
+                    guard newValue >= 0 else { return }
+                    withAnimation {
+                        proxy.scrollTo(cards[newValue].id, anchor: .top)
+                    }
+                    print("scrolled to:", newValue)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        autoScrollIndex = -1
+                    }
+                }
                 
-                vm.cards.removeAll()
-                vm.editingAt = nil
+                ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "clear") {
+                    
+                    vm.cards.removeAll()
+                    vm.editingAt = nil
+                }
+                .transformationAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.25))
+                .padding()
+                
             }
-            .transformationAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.25))
-            .padding()
-            
         }
     }
     

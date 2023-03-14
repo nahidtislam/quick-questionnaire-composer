@@ -34,7 +34,8 @@ struct QuestionEditorView: View {
                 Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
             }
             lineSeperator
-            
+            answerBox
+            lineSeperator
             Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
                 .font(.caption.width(.condensed))
             answerInfo
@@ -49,6 +50,7 @@ struct QuestionEditorView: View {
                 .disabled(!vm.isValid)
             }
         }
+        .transition(.asymmetric(insertion: .push(from: .top), removal: .scale))
         .foregroundColor(vm.inputs.result.bgStyle?.accentGraphic)
         .padding(10)
         .background(bg.matchedGeometryEffect(id: "q_card-\(question.id):bg", in: qSpace))
