@@ -251,7 +251,7 @@ struct QuestionEditorView: View {
                 .offset(x: ansOffset[item.id] ?? 0)
                 .gesture(
                     DragGesture()
-                        .onChanged{ v in
+                        .onChanged { v in
                             let w: CGFloat = {
                                 let width = v.translation.width
                                 let absW = abs(width)
@@ -269,7 +269,7 @@ struct QuestionEditorView: View {
                                 ansOffset[item.id] = w
                             }
                         }
-                        .onEnded{ v in
+                        .onEnded { v in
                             let threshold: CGFloat = -maxAnswerOffset
                             let setPosition: CGFloat? = v.translation.width < threshold ? threshold : nil
                             
