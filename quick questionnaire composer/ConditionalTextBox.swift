@@ -48,7 +48,7 @@ struct ConditionalTextBox: View {
             TextField(text: $output) {
                 Text(name)
                     .matchedGeometryEffect(id: "name", in: someNamespace)
-            }
+            }.matchedGeometryEffect(id: "name", in: someNamespace)
             .transition(.move(edge: .leading))
             Button("disable") {
                 withAnimation {
