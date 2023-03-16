@@ -19,18 +19,7 @@ struct ConditionalTextBox: View {
     var body: some View {
         HStack {
             if !isVisible {
-                Button {
-                    withAnimation {
-                        isVisible = true
-                        input = output
-                    }
-                } label: {
-                    HStack(spacing: 0) {
-                        Text("add ")
-                        Text(name)
-                            .matchedGeometryEffect(id: "name", in: someNamespace)
-                    }
-                }
+                addTextButton
             } else {
                 textContent
             }
@@ -43,19 +32,40 @@ struct ConditionalTextBox: View {
         }
     }
     
+    var addTextButton: some View {
+        Button {
+            withAnimation {
+                isVisible = true
+                input = output
+            }
+        } label: {
+            HStack(spacing: 0) {
+                Text("add ")
+//                    .transition(.move(edge: .trailing))
+//                    .transition(.offset(x: -90))
+                Text(name)
+//                    .transition(.move(edge: .leading))
+//                    .matchedGeometryEffect(id: "name", in: someNamespace)
+            }
+        }
+//        .frame(maxWidth: .infinity)
+//        .transition(.scale(scale: 0.8).combined(with: .opacity))
+    }
+    
     var textContent: some View {
         HStack {
             TextField(text: $output) {
                 Text(name)
-                    .matchedGeometryEffect(id: "name", in: someNamespace)
-            }.matchedGeometryEffect(id: "name", in: someNamespace)
-            .transition(.move(edge: .leading))
+//                    .matchedGeometryEffect(id: "name", in: someNamespace)
+            }
+//            .transition(.move(edge: .leading))
             Button("disable") {
                 withAnimation {
                     removeInput()
                 }
             }
-            .transition(.move(edge: .trailing))
+            .transition(.scale)
+//            .transition(.move(edge: .trailing))
         }
     }
     
