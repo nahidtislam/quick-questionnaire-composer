@@ -28,10 +28,11 @@ struct QuestionEditorView: View {
             TextField("title", text: $vm.inputs.title)
                 .font(.title)
             HStack {
-                TextField("description", text: $vm.inputs.subtitle)
-                    .disabled(!vm.inputs.subtitleIsEnabled)
-                    .font(.headline)
-                Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
+                ConditionalTextBox(name: "description", input: $vm.inputs.subtitle)
+//                TextField("description", text: $vm.inputs.subtitle)
+//                    .disabled(!vm.inputs.subtitleIsEnabled)
+//                    .font(.headline)
+//                Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
             }
             lineSeperator
             answerBox
@@ -391,13 +392,14 @@ extension QuestionEditorView {
         let id: UUID
         
         var title = ""
-        var subtitle = ""
+//        var subtitle = ""
+        var subtitle: String?
+        
         
         var answers = [QuestionCard.Answer]()
         
         var marks = ""
         
-        var subtitleIsEnabled = false
         var allCorrectAnswersRequired = false
         
         var bgColor = Color.clear
@@ -412,7 +414,8 @@ extension QuestionEditorView {
             .init(
                 id: id,
                 title: title,
-                subtitle: subtitleIsEnabled && !subtitle.isEmpty ? subtitle : nil,
+                subtitle: subtitle,
+//                subtitle: subtitleIsEnabled && !subtitle.isEmpty ? subtitle : nil,
                 marks: Double(marks) ?? -1,
                 bgStyle: bgStyle,
                 possibleAnswers: answers,
@@ -426,10 +429,11 @@ extension QuestionEditorView.Inputs {
     init(questionCard: QuestionCard) {
         self.id = questionCard.id
         self.title = questionCard.title
-        self.subtitle = questionCard.subtitle ?? ""
+        self.subtitle = questionCard.subtitle
+//        self.subtitle = questionCard.subtitle ?? ""
         self.answers = questionCard.possibleAnswers
         self.marks = questionCard.marks < 0 ? "" : String(neatDecimal: questionCard.marks)
-        self.subtitleIsEnabled = questionCard.subtitle != nil
+//        self.subtitleIsEnabled = questionCard.subtitle != nil
         self.allCorrectAnswersRequired = questionCard.allCorrectAnswersRequired
         self.bgColor = Color(hex: questionCard.bgStyle?.color ?? "none", colorSpace: .displayP3) ?? .clear
         self.bgAccent = questionCard.bgStyle?.accentScheme

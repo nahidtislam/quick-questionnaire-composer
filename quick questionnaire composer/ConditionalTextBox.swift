@@ -58,6 +58,10 @@ struct ConditionalTextBox: View {
                 Text(name)
 //                    .matchedGeometryEffect(id: "name", in: someNamespace)
             }
+            .onChange(of: output) { newValue in
+                input = output
+                if input!.isEmpty { input = nil }
+            }
 //            .transition(.move(edge: .leading))
             Button("disable") {
                 withAnimation {
