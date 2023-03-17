@@ -27,15 +27,14 @@ struct TickBox: View {
                 Text(title)
                     .foregroundColor(titleColor)
                 Spacer()
-                imagePair?[isOn] ?? [true : Image(systemName: "checkmark")][isOn]
-//                if let imagePair {
-//                    imagePair[isOn]
-//                } else if isOn {
-//                    Image(systemName: "checkmark")
-//                }
+                imagePair?[isOn] ?? defaultTick
             }
         }
         .foregroundColor(tickColor)
+    }
+    
+    private var defaultTick: Image? {
+        isOn ? Image(systemName: "checkmark") : nil
     }
     
     func titleColor(_ color: Color) -> Self {
@@ -59,7 +58,7 @@ struct TickBox_Previews: PreviewProvider {
             TickBox(title: "on", isOn: .constant(true))
             TickBox(title: "off", isOn: .constant(false))
             TickBox(title: "on img", isOn: .constant(true), imagePair: [true : Image(systemName: "mediastick"), false : Image(systemName: "ticket")])
-            TickBox(title: "on img", isOn: .constant(false), imagePair: [true : Image(systemName: "mediastick"), false : Image(systemName: "ticket")])
+            TickBox(title: "of img", isOn: .constant(false), imagePair: [true : Image(systemName: "mediastick"), false : Image(systemName: "ticket")])
         }
     }
 }
