@@ -15,6 +15,7 @@ struct ConditionalTextBox: View {
     @State private var output = ""
     @State private var isVisible = false
     @Namespace var someNamespace
+    @State private var autoTransition = true
     
     var body: some View {
         HStack {
@@ -24,12 +25,8 @@ struct ConditionalTextBox: View {
                 textContent
             }
         }
-        .onAppear {
-            if let input {
-                isVisible = true
-                output = input
-            }
-        }
+        .onAppear { load(text: input) }
+        .onChange(of: input, perform: load)
     }
     
     var addTextButton: some View {
@@ -41,42 +38,52 @@ struct ConditionalTextBox: View {
         } label: {
             HStack(spacing: 0) {
                 Text("add ")
-//                    .transition(.move(edge: .trailing))
-//                    .transition(.offset(x: -90))
                 Text(name)
-//                    .transition(.move(edge: .leading))
-//                    .matchedGeometryEffect(id: "name", in: someNamespace)
             }
         }
-//        .frame(maxWidth: .infinity)
-//        .transition(.scale(scale: 0.8).combined(with: .opacity))
     }
     
     var textContent: some View {
         HStack {
             TextField(text: $output) {
                 Text(name)
-//                    .matchedGeometryEffect(id: "name", in: someNamespace)
             }
             .onChange(of: output) { newValue in
-                input = output
-                if input!.isEmpty { input = nil }
+                autoTransition = false
+                if newValue.isEmpty {
+                    input = newValue
+                } else {
+                    input = nil
+                }
+                autoTransition = true
             }
-//            .transition(.move(edge: .leading))
             Button("disable") {
                 withAnimation {
                     removeInput()
                 }
             }
             .transition(.scale)
-//            .transition(.move(edge: .trailing))
         }
     }
     
     func removeInput() {
+        /// input being will clear the output
+//        let tOutput = output
         isVisible = false
-//        output = ""
         input = nil
+//        output = tOutput // restores output when user reenable the text
+    }
+    
+    func load(text input: String?) {
+        guard let input else {
+            if autoTransition {
+                output = ""
+                isVisible = false
+            }
+            return
+        }
+        isVisible = true
+        output = input
     }
 }
 
