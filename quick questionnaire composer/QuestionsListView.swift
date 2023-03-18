@@ -72,7 +72,6 @@ struct QuestionsListView: View {
                     withAnimation {
                         proxy.scrollTo(cards[newValue].id, anchor: .top)
                     }
-                    print("scrolled to:", newValue)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                         autoScrollIndex = -1
                     }

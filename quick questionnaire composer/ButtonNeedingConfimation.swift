@@ -76,13 +76,14 @@ struct ButtonNeedingConfimation: View {
                     Text(actionName)
                         .matchedGeometryEffect(id: "action_text", in: someNamespace)
                 }
+                .foregroundColor(mainColor)
+                .padding(6)
+                .padding(.horizontal, 10)
+                .background(roundedBgBorder.matchedGeometryEffect(id: "bg", in: someNamespace))
             }
-            .foregroundColor(mainColor)
-            .padding(6)
-            .padding(.horizontal, 10)
-            .background(roundedBgBorder.matchedGeometryEffect(id: "bg", in: someNamespace))
             .zIndex(1)
             
+            // extra inivis view for animation
             Rectangle()
                 .foregroundColor(.clear)
                 .frame(width: 35, height: 20)
