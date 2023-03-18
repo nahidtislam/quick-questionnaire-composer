@@ -27,26 +27,12 @@ struct QuestionEditorView: View {
         VStack(alignment: .center) {
             TextField("title", text: $vm.inputs.title)
                 .font(.title)
-            HStack {
-                ConditionalTextBox(name: "description", input: $vm.inputs.subtitle)
-//                TextField("description", text: $vm.inputs.subtitle)
-//                    .disabled(!vm.inputs.subtitleIsEnabled)
-//                    .font(.headline)
-//                Toggle("", isOn: $vm.inputs.subtitleIsEnabled)
-            }
-            lineSeperator
+            ConditionalTextBox(name: "description", input: $vm.inputs.subtitle)
             answerBox
-            lineSeperator
             if vm.correctAnsCount > 1 {
-                TickBox(title: "all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
-                    .titleColor(vm.inputs.result.bgStyle?.accentGraphic ?? .primary)
-                    .font(.caption.width(.condensed))
-                    .tickColor(Color(hex: "#33AA66", colorSpace: .displayP3))
+                allAnswerRequiredTick
                     .onDisappear { vm.inputs.allCorrectAnswersRequired = false }
-                    
             }
-//            Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
-//                .font(.caption.width(.condensed))
             answerInfo
             BackgroundColorPicker(selection: $vm.inputs.bgColor, accentSchme: $vm.inputs.bgAccent, name: vm.inputs.title, label: "question background color")
             marksTextField
@@ -92,6 +78,16 @@ struct QuestionEditorView: View {
             .frame(height: 4)
             .padding(.horizontal, -10)
             .foregroundColor(.init(hex: vm.isValid ? "#bbeebb" : "#f1a5ad", colorSpace: .displayP3))
+    }
+    
+    private var allAnswerRequiredTick: some View {
+        TickBox(title: "all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
+            .titleColor(vm.inputs.result.bgStyle?.accentGraphic ?? .primary)
+            .font(.subheadline.width(.condensed))
+            .tickColor(Color(hex: "#33AA66", colorSpace: .displayP3))
+            .padding(3)
+            .padding(.horizontal, 5)
+            .background { RoundedRectangle(cornerRadius: 8).stroke(vm.inputs.allCorrectAnswersRequired ? Color.mint : Color.orange, style: .init(lineWidth: 1, lineCap: .round, dash: [3, 7])) }
     }
     
     private var marksTextField: some View {
@@ -252,6 +248,7 @@ struct QuestionEditorView: View {
             .foregroundColor(.white)
             .background(Color.red)
             .cornerRadius(.infinity)
+            .opacity(ansOffset[item.id] != nil ? 1 : 0)
             .offset(x: ansOffset[item.id, default: 0] / 5)
             .scaleEffect(deleteButton(initialScale: 0.6, with: -ansOffset[item.id, default: 0], for: maxAnswerOffset))
             AnswerEditor(answer: item)
