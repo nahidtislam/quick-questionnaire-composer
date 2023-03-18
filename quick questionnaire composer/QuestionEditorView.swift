@@ -217,7 +217,14 @@ struct QuestionEditorView: View {
     }
     
     private var answerContainerColor: Color? {
-        colorScheme == .dark ? Color(hex: "#224477", colorSpace: .displayP3) : Color(hex: "#C9E8FF", colorSpace: .displayP3)
+        let darkColor = Color(hex: "#224477", colorSpace: .displayP3)
+        let lightColor = Color(hex: "#C9E8FF", colorSpace: .displayP3)
+        
+        if let customScheme = vm.inputs.bgAccent {
+            return customScheme == .dark ? lightColor : darkColor
+        } else {
+            return colorScheme == .dark ? darkColor : lightColor
+        }
     }
     
     private func deleteButton(initialScale: CGFloat, with value: CGFloat, for maxDistance: CGFloat) -> CGSize {
