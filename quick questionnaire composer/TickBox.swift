@@ -14,6 +14,7 @@ struct TickBox: View {
     
     var titleColor: Color?
     var tickColor: Color?
+    var font: Font?
     
     var imagePair: [Bool : Image]?
     
@@ -29,6 +30,7 @@ struct TickBox: View {
                 Spacer()
                 imagePair?[isOn] ?? defaultTick
             }
+            .font(font)
         }
         .foregroundColor(tickColor)
     }
@@ -37,16 +39,31 @@ struct TickBox: View {
         isOn ? Image(systemName: "checkmark") : nil
     }
     
-    func titleColor(_ color: Color) -> Self {
+    func titleColor(_ color: Color?) -> Self {
         var new = self
         new.titleColor = color
         
         return new
     }
     
-    func tickColor(_ color: Color) -> Self {
+    func tickColor(_ color: Color?) -> Self {
         var new = self
         new.tickColor = color
+        
+        return new
+    }
+    
+    func foregroundColor(_ color: Color?) -> Self {
+        var new = self
+        new.titleColor = color
+        new.tickColor = color
+        
+        return new
+    }
+    
+    func font(_ font: Font?) -> Self {
+        var new = self
+        new.font = font
         
         return new
     }
