@@ -15,7 +15,6 @@ struct ConditionalTextBox: View {
     @State private var output = ""
     @State private var isVisible = false
     @Namespace var someNamespace
-    @State private var autoTransition = true
     
     var body: some View {
         HStack {
@@ -49,13 +48,7 @@ struct ConditionalTextBox: View {
                 Text(name)
             }
             .onChange(of: output) { newValue in
-                autoTransition = false
-                if newValue.isEmpty {
-                    input = newValue
-                } else {
-                    input = nil
-                }
-                autoTransition = true
+                input = newValue != "" ? newValue : nil
             }
             Button("disable") {
                 withAnimation {
@@ -67,21 +60,12 @@ struct ConditionalTextBox: View {
     }
     
     func removeInput() {
-        /// input being will clear the output
-//        let tOutput = output
         isVisible = false
         input = nil
-//        output = tOutput // restores output when user reenable the text
     }
     
     func load(text input: String?) {
-        guard let input else {
-            if autoTransition {
-                output = ""
-                isVisible = false
-            }
-            return
-        }
+        guard let input else { return }
         isVisible = true
         output = input
     }
