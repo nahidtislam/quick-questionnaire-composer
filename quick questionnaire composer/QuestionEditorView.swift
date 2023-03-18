@@ -37,8 +37,16 @@ struct QuestionEditorView: View {
             lineSeperator
             answerBox
             lineSeperator
-            Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
-                .font(.caption.width(.condensed))
+            if vm.correctAnsCount > 1 {
+                TickBox(title: "all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
+                    .titleColor(vm.inputs.result.bgStyle?.accentGraphic ?? .primary)
+                    .font(.caption.width(.condensed))
+                    .tickColor(Color(hex: "#33AA66", colorSpace: .displayP3))
+                    .onDisappear { vm.inputs.allCorrectAnswersRequired = false }
+                    
+            }
+//            Toggle("all correct answers required to get marks", isOn: $vm.inputs.allCorrectAnswersRequired)
+//                .font(.caption.width(.condensed))
             answerInfo
             BackgroundColorPicker(selection: $vm.inputs.bgColor, accentSchme: $vm.inputs.bgAccent, name: vm.inputs.title, label: "question background color")
             marksTextField
@@ -121,8 +129,9 @@ struct QuestionEditorView: View {
         let stylerSize: CGFloat = 65 * min(CGFloat(vm.stylerIsShownForIndexes.count), 1)
         
         let maxCells: CGFloat = 3
+        let ansCount = CGFloat(vm.inputs.answers.count)
         
-        return cellSize * min(CGFloat(vm.inputs.answers.count), maxCells) + stylerSize
+        return cellSize * min(ansCount, maxCells) + stylerSize
     }
     
     private var answerBox: some View {
