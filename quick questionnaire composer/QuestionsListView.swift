@@ -41,31 +41,33 @@ struct QuestionsListView: View {
         }
     }
     
+    @ViewBuilder
+    func show(card: QuestionCard) -> some View {
+        if editingForUUID == card.id {
+            QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
+                .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
+                .padding(12)
+        } else {
+            QuestionView(question: card, qSpace: someNamespace)
+                .padding(8)
+                .onTapGesture {
+                    withAnimation(.spring()) {
+                        editingForUUID = card.id
+                        autoScrollIndex = vm.cards.firstIndex(where: { $0.id == editingForUUID})!
+                    }
+                }
+                .padding(editingForUUID == nil ? 0 : 12)
+        }
+    }
+    
     var cardList: some View {
         ScrollView {
             ScrollViewReader { proxy in
                 ForEach(cards) { card in
-                    if editingForUUID == card.id {
-                        QuestionEditorView(question: $cards.first(where: { $0.id == card.id})!, qSpace: someNamespace)
-                            .transition(.asymmetric(insertion: .push(from: .top), removal: .push(from: .bottom)))
-                            .padding(12)
-                    } else {
-                        QuestionView(question: card, qSpace: someNamespace)
-                            .padding(8)
-                            .onTapGesture {
-                                withAnimation(.spring()) {
-                                    editingForUUID = card.id
-                                    autoScrollIndex = vm.cards.firstIndex(where: { $0.id == editingForUUID})!
-                                }
-                            }
-                            .padding(editingForUUID == nil ? 0 : 12)
-                    }
+                    show(card: card)
                 }
                 .onDelete { indexSet in
                     vm.cards.remove(atOffsets: indexSet)
-//                    if vm.cards[indexSet].contains(where: { $0.id == editingForUUID }) {
-//                        editingForUUID = nil
-//                    }
                 }
                 .onChange(of: autoScrollIndex) { newValue in
                     guard newValue >= 0 else { return }
@@ -76,6 +78,7 @@ struct QuestionsListView: View {
                         autoScrollIndex = -1
                     }
                 }
+                .listRowSeparator(.hidden)
                 
                 ButtonNeedingConfimation(actionName: "clear", confirmationMessage: "are you sure you want to delete all questions?", role: .destructive, systemSymbol: "clear") {
                     
@@ -83,9 +86,12 @@ struct QuestionsListView: View {
                     vm.editingAt = nil
                 }
                 .transformationAnimation(.spring(response: 0.3, dampingFraction: 0.8, blendDuration: 0.25))
+                .frame(maxWidth: .infinity,alignment: .center)
                 .padding()
+                .listRowSeparator(.hidden)
                 
             }
+            .listStyle(.plain)
         }
     }
     

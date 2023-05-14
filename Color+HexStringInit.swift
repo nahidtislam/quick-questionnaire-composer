@@ -39,6 +39,19 @@ extension Color {
         self.init(colorSpace, red: rValue, green: gValue, blue: bValue)
     }
     
+    init?(scheme: ColorScheme, dark: String, light: String) {
+        switch scheme {
+        case .dark:
+            guard let darkColor = Color(hex: dark, colorSpace: .displayP3) else { return nil }
+            self = darkColor
+        case .light:
+            guard let lightColor = Color(hex: light, colorSpace: .displayP3) else { return nil }
+            self = lightColor
+        @unknown default:
+            fatalError("new color dropped")
+        }
+    }
+    
     var hexValue: String? {
         guard let colorComp = self.cgColor?.components else { return nil }
         

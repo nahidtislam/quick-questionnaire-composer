@@ -45,7 +45,6 @@ struct QuestionEditorView: View {
                 .disabled(!vm.isValid)
             }
         }
-        .transition(.asymmetric(insertion: .push(from: .top), removal: .scale))
         .foregroundColor(vm.inputs.result.bgStyle?.accentGraphic)
         .padding(10)
         .background(bg.matchedGeometryEffect(id: "q_card-\(question.id):bg", in: qSpace))
@@ -58,10 +57,43 @@ struct QuestionEditorView: View {
         }
     }
     
-    private var answerInfo:some View {
-        VStack {
-            display("answers", value: vm.inputs.answers.count)
-            display("correct", value: vm.correctAnsCount)
+    private var answerInfo: some View {
+        HStack {
+            HStack{
+                Image(systemName: "list.bullet.rectangle")
+//                    .offset(y: 1.5)
+                display("answers", value: vm.inputs.answers.count, spaced: false)
+                if vm.containsEmptyAnsTitile || vm.inputs.answers.count == 0 {
+                    Image(systemName: "x.circle.fill")
+                        .foregroundColor(.red)
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                }
+            }
+            .font(.subheadline.lowercaseSmallCaps())
+            .padding(3)
+            .padding(.horizontal, 5)
+            .background {
+                RoundedRectangle(cornerRadius: 6)
+                    .foregroundColor(colorFlip(light: "#ffffff", dark: "#111111"))
+            }
+            Spacer()
+            HStack {
+                Image(systemName: "checkmark.square.fill")
+                    .offset(y: 1.5)
+                display("correct", value: vm.correctAnsCount, spaced: false)
+                if vm.correctAnsCount == 0 {
+                    Image(systemName: "x.circle.fill")
+                        .foregroundColor(.red)
+                        .transition(.scale(scale: 0.5).combined(with: .opacity))
+                }
+            }
+            .font(.subheadline.lowercaseSmallCaps())
+            .padding(3)
+            .padding(.horizontal, 5)
+            .background {
+                RoundedRectangle(cornerRadius: 6)
+                    .foregroundColor(colorFlip(light: "#99ffaa", dark: "#228833"))
+            }
         }
     }
     
@@ -78,6 +110,22 @@ struct QuestionEditorView: View {
             .frame(height: 4)
             .padding(.horizontal, -10)
             .foregroundColor(.init(hex: vm.isValid ? "#bbeebb" : "#f1a5ad", colorSpace: .displayP3))
+    }
+    
+    private func colorFlip(light: String, dark: String) -> Color? {
+        colorFlip(scheme: vm.inputs.bgAccent, light: light, dark: dark)
+    }
+    
+    private func colorFlip(scheme: ColorScheme?, light: String, dark: String) -> Color? {
+//        let light = Color(hex: light, colorSpace: .displayP3)
+//        let dark = Color(hex: dark, colorSpace: .displayP3)
+        
+        if let scheme {
+            // we flipped them
+            return Color(scheme: scheme, dark: light, light: dark)
+        } else {
+            return Color(scheme: colorScheme, dark: dark, light: light)
+        }
     }
     
     private var allAnswerRequiredTick: some View {
@@ -101,13 +149,11 @@ struct QuestionEditorView: View {
     
     
     
-    private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num) -> some View {
+    private func display<Num: Numeric & CustomStringConvertible>(_ descripton: String, value: Num, spaced: Bool = true) -> some View {
         HStack {
             Text("\(descripton): ")
-//                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_label", in: qSpace)
-            Spacer()
+            if spaced { Spacer() }
             Text(value.description)
-//                .matchedGeometryEffect(id: "q_card-\(question.id):describing=\(descripton.replacingOccurrences(of: " ", with: "_"))_value", in: qSpace)
         }
     }
     
