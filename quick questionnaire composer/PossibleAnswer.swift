@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PossibleAnswer: Identifiable, Codable, Hashable {
+struct PossibleAnswer: HierarchableData {
     var id = UUID()
     
     var name: String

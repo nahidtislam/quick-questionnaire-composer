@@ -9,8 +9,6 @@ import SwiftUI
 
 struct QuestionnaireView: View {
     @State var questionnaire: Questionnaire
-    @State private var newQuestion = Question(title: "", possibleAnswers: [], correctAnswersID: [], marks: 0, allAnswersRequired: false)
-    @State private var showingNewQuestion = false
     
     @State private var nameNeedingToBeSet = false
     
@@ -33,15 +31,23 @@ struct QuestionnaireView: View {
                 }
             }
             Button("new question") {
-                showingNewQuestion = true
+                let newQuestion = Question(title: "", possibleAnswers: [], correctAnswersID: [], marks: 0, allAnswersRequired: false)
+                questionnaire.questions.append(newQuestion)
+                navCoord.add(destination: .question(newQuestion))
             }
         }
         .navigationTitle(questionnaire.name)
         .onAppear {
             nameNeedingToBeSet = questionnaire.name.count == 0
         }
+        .onDisappear {
+            if questionnaire.name.count > 0 {
+                try? provider.save(questionnaire: questionnaire)
+                try? provider.reload()
+            }
+        }
         .sheet(isPresented: $nameNeedingToBeSet) {
-            if questionnaire.name.count == 0 {
+            if questionnaire.name.trimmingCharacters(in: .whitespacesAndNewlines).count == 0 {
                 self.navCoord.goBack()
             }
         } content: {
@@ -53,19 +59,7 @@ struct QuestionnaireView: View {
             }
             .navigationTitle("please set name")
         }
-        .fullScreenCover(isPresented: $showingNewQuestion) {
-            if Question.validate(question: newQuestion) {
-                questionnaire.questions.append(newQuestion)
-            }
-            newQuestion = Question(title: "", possibleAnswers: [], correctAnswersID: [], marks: 0, allAnswersRequired: false)
-        } content: {
-            QuestionView(question: newQuestion)
-                .overlay(alignment: .bottom) {
-                    Button("add") {
-                        showingNewQuestion = false
-                    }
-                }
-        }
+        .navigationDestination(for: PathForView.self) { $0 }
     }
 }
 

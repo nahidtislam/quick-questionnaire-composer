@@ -24,6 +24,9 @@
 		25DBF28B2A142D0700A4D69C /* PathForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28A2A142D0700A4D69C /* PathForView.swift */; };
 		25DBF28D2A14BF7200A4D69C /* QuestionView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */; };
 		25DBF28F2A14BFC700A4D69C /* QuestionnaireListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */; };
+		25DBF2912A1535D500A4D69C /* ExampleUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2902A1535D500A4D69C /* ExampleUserData.swift */; };
+		25DBF2932A153BB500A4D69C /* QuestionnaireView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */; };
+		25DBF2952A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2942A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift */; };
 		25F0212C2A12227C008620F5 /* QuestionnaireListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F0212B2A12227C008620F5 /* QuestionnaireListView.swift */; };
 		25F127C929BCC225002DCC87 /* String+NeatDecimal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F127C829BCC225002DCC87 /* String+NeatDecimal.swift */; };
 		25F127CB29BCC734002DCC87 /* ConditionalTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25F127CA29BCC734002DCC87 /* ConditionalTextBox.swift */; };
@@ -52,6 +55,9 @@
 		25DBF28A2A142D0700A4D69C /* PathForView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathForView.swift; sourceTree = "<group>"; };
 		25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuestionView+Cell.swift"; sourceTree = "<group>"; };
 		25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionnaireListProvider.swift; sourceTree = "<group>"; };
+		25DBF2902A1535D500A4D69C /* ExampleUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUserData.swift; sourceTree = "<group>"; };
+		25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuestionnaireView+Cell.swift"; sourceTree = "<group>"; };
+		25DBF2942A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+IndexFromIdentifiableElement.swift"; sourceTree = "<group>"; };
 		25F0212B2A12227C008620F5 /* QuestionnaireListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionnaireListView.swift; sourceTree = "<group>"; };
 		25F127C829BCC225002DCC87 /* String+NeatDecimal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+NeatDecimal.swift"; sourceTree = "<group>"; };
 		25F127CA29BCC734002DCC87 /* ConditionalTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConditionalTextBox.swift; sourceTree = "<group>"; };
@@ -78,6 +84,7 @@
 				25F127C829BCC225002DCC87 /* String+NeatDecimal.swift */,
 				25C88DF829A27DDC0073F412 /* Color+HexStringInit.swift */,
 				250E1F002A12A145009F1355 /* NumericTextField.swift */,
+				25DBF2942A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift */,
 				25C88DF529A26E750073F412 /* Array+RawRepresentable.swift */,
 				25C88DE229A24E8B0073F412 /* quick questionnaire composer */,
 				25C88DE129A24E8B0073F412 /* Products */,
@@ -102,6 +109,7 @@
 				25FFB0482A118A0600453651 /* Questionnaire.swift */,
 				25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */,
 				2539A6DB2A1193D9007CF516 /* QuestionnaireView.swift */,
+				25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */,
 				25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */,
 				25F0212B2A12227C008620F5 /* QuestionnaireListView.swift */,
 				25C7214D2A118F9E00289308 /* Question.swift */,
@@ -123,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				25C88DEA29A24E8D0073F412 /* Preview Assets.xcassets */,
+				25DBF2902A1535D500A4D69C /* ExampleUserData.swift */,
 			);
 			path = "Preview Content";
 			sourceTree = "<group>";
@@ -209,13 +218,16 @@
 				2548BB0F29B5F21F005A03DA /* BackgroundColorPicker.swift in Sources */,
 				25FFB0492A118A0600453651 /* Questionnaire.swift in Sources */,
 				25FFB04B2A118A3400453651 /* WelcomeView.swift in Sources */,
+				25DBF2932A153BB500A4D69C /* QuestionnaireView+Cell.swift in Sources */,
 				25C88DF929A27DDC0073F412 /* Color+HexStringInit.swift in Sources */,
 				25F0212C2A12227C008620F5 /* QuestionnaireListView.swift in Sources */,
 				25DBF28F2A14BFC700A4D69C /* QuestionnaireListProvider.swift in Sources */,
 				25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */,
 				2539A6DE2A119736007CF516 /* QuestionView.swift in Sources */,
 				2539A6DC2A1193D9007CF516 /* QuestionnaireView.swift in Sources */,
+				25DBF2912A1535D500A4D69C /* ExampleUserData.swift in Sources */,
 				25C7214E2A118F9E00289308 /* Question.swift in Sources */,
+				25DBF2952A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift in Sources */,
 				25F127CF29BE5A09002DCC87 /* FlipCard.swift in Sources */,
 				25F127CD29BCE47C002DCC87 /* ButtonNeedingConfimation.swift in Sources */,
 				2539A6E02A119CFB007CF516 /* PossibleAnswerView.swift in Sources */,

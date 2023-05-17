@@ -9,45 +9,44 @@ import SwiftUI
 
 struct QuestionView: View {
     @State var question: Question
-    @State private var newAnswer = PossibleAnswer(name: "", symbol: "")
-    @State private var showingNewAnswer = false
     
     @EnvironmentObject var navCoord: NavigationCoordinator
+    @EnvironmentObject var provider: QuestionnaireListProvider
     
     var body: some View {
-        NavigationStack {
-            Form {
-                Section("name") {
-                    TextField("title", text: $question.title)
-                    ConditionalTextBox(name: "subtitle", input: $question.subtitle)
-                }
-                
-                Section("possible answers") {
-                    ForEach($question.possibleAnswers) { ans in
-                        nav(answer: ans)
-                    }
-                }
-                
-                Button("new answer") {
-                    showingNewAnswer = true
-                }
-                
-                HStack {
-                    Text("marks:")
-                    Spacer()
-                    NumericTextField(title: String(Int(question.correctAnswersID.count)), number: $question.marks, appearWithZero: false).dontApeapearWithZeo()
-                        .multilineTextAlignment(.trailing)
+        List {
+            Section("name") {
+                TextField("title", text: $question.title)
+                ConditionalTextBox(name: "subtitle", input: $question.subtitle)
+            }
+            
+            Section("possible answers") {
+                ForEach($question.possibleAnswers) { ans in
+                    nav(answer: ans)
                 }
             }
-            .sheet(isPresented: $showingNewAnswer) {
-                question.possibleAnswers.append(newAnswer)
-                newAnswer = PossibleAnswer(name: "", symbol: "")
-            } content: {
-                PossibleAnswerView(answer: newAnswer)
+            
+            Button("new answer") {
+                let answer = PossibleAnswer(name: "")
+                question.possibleAnswers.append(answer)
+                navCoord.add(destination: .possibleAnswer(answer))
+            }
+            
+            HStack {
+                Text("marks:")
+                Spacer()
+                NumericTextField(title: String(Int(question.correctAnswersID.count)), number: $question.marks, appearWithZero: false).dontApeapearWithZeo()
+                    .multilineTextAlignment(.trailing)
             }
         }
-        .navigationDestination(for: PossibleAnswer.self) { answer in
-            PossibleAnswerView(answer: answer)
+//        .navigationDestination(for: PossibleAnswer.self) { answer in
+//            PossibleAnswerView(answer: answer)
+//        }
+        .navigationDestination(for: PathForView.self) { $0 }
+        .onDisappear {
+            if Question.validate(question: question) {
+                try? provider.apply(question: question)
+            }
         }
 
     }
@@ -94,6 +93,7 @@ struct QuestionView_Previews: PreviewProvider {
         var body: some View {
             QuestionView(question: question)
                 .environmentObject(NavigationCoordinator())
+                .environmentObject(QuestionnaireListProvider(questionnaire: [.init(name: "eg", questions: [question])]))
         }
     }
     

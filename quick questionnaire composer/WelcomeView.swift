@@ -10,8 +10,8 @@ import SwiftUI
 struct WelcomeView: View {
     
     @StateObject var provider = (try? QuestionnaireListProvider.loadFromStorage()) ?? .blank()
+    @StateObject private var navCoord = NavigationCoordinator()
     
-    @State private var navCoord = NavigationCoordinator()
     @State private var newQuestionnaire = Questionnaire(name: "", symbol: "", questions: [])
     
     var body: some View {
@@ -19,16 +19,14 @@ struct WelcomeView: View {
             VStack {
                 Text("welcome")
                     .font(.system(.largeTitle, design: .rounded, weight: .black))
-//                NavigationLink("create new", value: PathForView.questionnaire(newQuestionnaire))
-                Button("create new") {
-                    print(navCoord.navNodes)
-                    navCoord.add(destination: .questionnaire(newQuestionnaire))
-                    print(navCoord.navNodes)
-                }
+                NavigationLink("create new", value: PathForView.questionnaire(newQuestionnaire))
+//                Button("create new") {
+//                    navCoord.add(destination: .questionnaire(newQuestionnaire))
+//                }
                 Button("continue") {
-                    navCoord.add(destination: .questionnaireList(provider.questionnaire))
+                    navCoord.add(destination: .questionnaireList(provider.questionnaires))
                 }
-                .disabled(provider.questionnaire.count < 1)
+                .disabled(provider.questionnaires.count < 1)
             }
             .toolbar(.hidden)
             .navigationTitle("welcome")
@@ -38,6 +36,9 @@ struct WelcomeView: View {
         }
         .environmentObject(provider)
         .environmentObject(navCoord)
+        .onAppear {
+            print(provider.questionnaires)
+        }
     }
 }
 

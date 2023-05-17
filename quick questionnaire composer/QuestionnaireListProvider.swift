@@ -9,59 +9,111 @@ import Foundation
 
 class QuestionnaireListProvider: ObservableObject {
     
-    @Published var questionnaire: [Questionnaire]
+    @Published var questionnaires: [Questionnaire]
     
     init(questionnaire: [Questionnaire]) {
-        self.questionnaire = questionnaire
+        self.questionnaires = questionnaire
     }
     
     func checkValidity() -> Bool {
-        !questionnaire.contains(where: { !Questionnaire.validate(questionnaire: $0) })
+        !questionnaires.contains(where: { !Questionnaire.validate(questionnaire: $0) })
     }
     
     static var docFolder: URL {
         FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
     }
     
-    func save(questionnaire: Questionnaire) {
-        
+    var questionnaireFolder: URL {
+        QuestionnaireListProvider.docFolder
+            .appending(path: "questionnaires", directoryHint: .isDirectory)
     }
     
-    func rename(questionnaire: Questionnaire, to newName: String) {
-        
-    }
-    
-    func delete(questionnaire: Questionnaire) {
-        
-    }
-    
-    func reload() {
-        
-    }
-    
-    static func loadFromStorage() throws -> QuestionnaireListProvider {
+    func save(questionnaire: Questionnaire) throws {
+        let folder = questionnaireFolder
+        let savePath = folder.appendingPathComponent(questionnaire.name, conformingTo: .json)
         let fm = FileManager.default
-        let path = Self.docFolder.path(percentEncoded: false)
+        
+        if !fm.fileExists(atPath: folder.path(percentEncoded: false)) {
+            try fm.createDirectory(at: folder, withIntermediateDirectories: false)
+        }
+        
+        let data = try JSONEncoder().encode(questionnaire)
+        try data.write(to: savePath, options: .completeFileProtection)
+    }
+    
+    func rename(questionnaire: inout Questionnaire, to newName: String) throws {
+        let fm = FileManager.default
+        let oldName = questionnaire.name
+        
+        let oldNamePath = questionnaireFolder.appending(path: oldName)
+        let newNamePath = questionnaireFolder.appending(path: newName)
+        
+        try fm.moveItem(at: oldNamePath, to: newNamePath)
+        questionnaire.name = newName
+    }
+    
+    func delete(questionnaire: Questionnaire) throws {
+        let index = questionnaires.index(using: questionnaire)
+        let singularSet = IndexSet([index])
+        
+        try delete(indexSet: singularSet)
+    }
+    
+    func delete(indexSet: IndexSet) throws {
+        questionnaires.remove(atOffsets: indexSet)
+        
+    }
+    
+    func apply(question: Question) throws {
+        let (questionnaireIndex, questionIndex): (Int, Int) = {
+            for (i, questionnaire) in questionnaires.enumerated() {
+                for (j, lookingQuestion) in questionnaire.questions.enumerated() {
+                    if lookingQuestion.id == question.id {
+                        return (i, j)
+                    }
+                }
+            }
+            fatalError("wat")
+        }()
+        
+        questionnaires[questionnaireIndex].questions[questionIndex] = question
+        try save(questionnaire: questionnaires[questionnaireIndex])
+    }
+    
+    func reload() throws {
+        let fm = FileManager.default
+        let path = questionnaireFolder.path(percentEncoded: false)
         
         var questionnaires = [Questionnaire]()
         
-        let items = try fm.contentsOfDirectory(atPath: path).filter { item in
-            item.contains("Document/questionnaire - ")
-        }
-
-        for item in items {
-            do {
-                guard let data = fm.contents(atPath: item) else { throw CocoaError(.fileReadCorruptFile) }
-                let decoded = try JSONDecoder().decode(Questionnaire.self, from: data)
-                
-                questionnaires.append(decoded)
+        let items = try fm.contentsOfDirectory(atPath: path)
+        items.forEach { item in
+            let fullpath = path + item
+            guard let data = fm.contents(atPath: fullpath),
+                  let decoded = try? JSONDecoder().decode(Questionnaire.self, from: data) else {
+//                throw CocoaError(.fileReadCorruptFile)
+                return
             }
+            
+            questionnaires.append(decoded)
         }
         
-        return .init(questionnaire: questionnaires)
+        self.questionnaires.removeAll()
+        self.questionnaires = questionnaires
+    }
+    
+    static func loadFromStorage() throws -> QuestionnaireListProvider {
+        let ouput = QuestionnaireListProvider.blank()
+        try ouput.reload()
+        
+        return ouput
     }
     
     static func blank() -> QuestionnaireListProvider {
         .init(questionnaire: [])
     }
+}
+
+protocol HierarchableData: Identifiable, Codable, Hashable {
+    
 }

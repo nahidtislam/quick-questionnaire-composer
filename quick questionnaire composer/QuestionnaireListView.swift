@@ -9,15 +9,34 @@ import SwiftUI
 
 struct QuestionnaireListView: View {
     @State var questionnaires: [Questionnaire]
+    @EnvironmentObject var navCoord: NavigationCoordinator
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List(questionnaires) { questionnaire in
+            NavigationLink(value: PathForView.questionnaire(questionnaire)) {
+                QuestionnaireView.Cell(questionnaire: questionnaire)
+            }
+        }
+        .navigationTitle("questionnaires")
     }
 }
 
 struct QuestionnaireListView_Previews: PreviewProvider {
+    
+    private struct InteractiveContainer: View {
+        @State private var list = [ExampleUserData.oneQuestionnaire]
+        
+        var body: some View {
+            NavigationStack {
+                QuestionnaireListView(questionnaires: list)
+                    .environmentObject(NavigationCoordinator())
+                    .environmentObject(QuestionnaireListProvider.blank())
+            }
+        }
+        
+    }
+    
     static var previews: some View {
-        QuestionnaireListView(questionnaires: [])
-            .environmentObject(NavigationCoordinator())
+        InteractiveContainer()
     }
 }
