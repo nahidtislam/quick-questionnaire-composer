@@ -14,7 +14,7 @@ struct QuestionnaireView: View {
     
     @State private var nameNeedingToBeSet = false
     
-    @EnvironmentObject var provider: QuestionnaireProvider
+    @EnvironmentObject var provider: QuestionnaireListProvider
     @EnvironmentObject var navCoord: NavigationCoordinator
     
     var body: some View {
@@ -76,7 +76,7 @@ struct QuestionnaireView_Previews: PreviewProvider {
         
         var body: some View {
             QuestionnaireView(questionnaire: questionnaire)
-                .environmentObject(QuestionnaireProvider(questionnaire: [questionnaire]))
+                .environmentObject(QuestionnaireListProvider(questionnaire: [questionnaire]))
                 .environmentObject(NavigationCoordinator())
         }
         
@@ -84,25 +84,5 @@ struct QuestionnaireView_Previews: PreviewProvider {
     
     static var previews: some View {
         Interactive()
-    }
-}
-
-extension QuestionView {
-    struct Cell: View {
-        let question: Question
-        var body: some View {
-            VStack {
-                Text(question.title)
-                    .font(.title2)
-                if let subheading = question.subtitle {
-                    Text(subheading)
-                        .font(.subheadline)
-                }
-                HStack {
-                    Text(String(question.correctAnswersID.count))
-                    Text(String(question.possibleAnswers.count))
-                }
-            }
-        }
     }
 }
