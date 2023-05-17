@@ -19,11 +19,20 @@ struct QuestionnaireView: View {
         List {
             Section("questions") {
                 ForEach($questionnaire.questions) { $question in
-                    NavigationLink {
-                        QuestionView(question: question)
-                    } label: {
+//                    NavigationLink {
+//                        QuestionView(question: question)
+//                    } label: {
+//                        QuestionView.Cell(question: question)
+//                    }
+//                    Button {
+//                        navCoord.add(destination: .question(question))
+//                    } label: {
+//                        QuestionView.Cell(question: question)
+//                    }
+                    NavigationLink(pfView: .question(question)) {
                         QuestionView.Cell(question: question)
                     }
+
                     
                 }
                 .onDelete { indexSet in

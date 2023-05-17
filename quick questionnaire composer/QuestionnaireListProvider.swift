@@ -60,8 +60,12 @@ class QuestionnaireListProvider: ObservableObject {
     }
     
     func delete(indexSet: IndexSet) throws {
+        let fm = FileManager.default
         questionnaires.remove(atOffsets: indexSet)
-        
+        indexSet.forEach { i in
+            let p = questionnaireFolder.appendingPathComponent(questionnaires[i].name, conformingTo: .json)
+            try? fm.removeItem(at: p)
+        }
     }
     
     func apply(question: Question) throws {

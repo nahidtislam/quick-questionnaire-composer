@@ -26,3 +26,13 @@ enum PathForView: View, Hashable {
         }
     }
 }
+
+extension NavigationLink where Destination == Never {
+    init(pfView: PathForView, @ViewBuilder label: () -> Label) {
+        self = NavigationLink(value: pfView, label: label)
+    }
+    
+    init<S: StringProtocol>(_ title: S, pfView: PathForView) where Label == Text {
+        self = NavigationLink(title, value: pfView)
+    }
+}

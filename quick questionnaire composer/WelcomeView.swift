@@ -19,10 +19,8 @@ struct WelcomeView: View {
             VStack {
                 Text("welcome")
                     .font(.system(.largeTitle, design: .rounded, weight: .black))
-                NavigationLink("create new", value: PathForView.questionnaire(newQuestionnaire))
-//                Button("create new") {
-//                    navCoord.add(destination: .questionnaire(newQuestionnaire))
-//                }
+//                NavigationLink("create new", value: PathForView.questionnaire(newQuestionnaire))
+                NavigationLink("create new", pfView: .questionnaire(newQuestionnaire))
                 Button("continue") {
                     navCoord.add(destination: .questionnaireList(provider.questionnaires))
                 }
@@ -36,9 +34,6 @@ struct WelcomeView: View {
         }
         .environmentObject(provider)
         .environmentObject(navCoord)
-        .onAppear {
-            print(provider.questionnaires)
-        }
     }
 }
 

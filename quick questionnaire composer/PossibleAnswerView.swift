@@ -12,7 +12,7 @@ struct PossibleAnswerView: View {
     @State private var symbol = ""
     
     var body: some View {
-        Form {
+        List {
             TextField("name", text: $answer.name)
             ConditionalTextBox(name: "symbol", input: $answer.symbol)
 //            TextField("symbol", text: $symbol)
@@ -44,7 +44,7 @@ struct PossibleAnswerView_Previews: PreviewProvider {
 
 extension PossibleAnswerView {
     struct Cell: View {
-        @Binding var answer: PossibleAnswer
+        let answer: PossibleAnswer
         let correct: Bool
         
         var body: some View {

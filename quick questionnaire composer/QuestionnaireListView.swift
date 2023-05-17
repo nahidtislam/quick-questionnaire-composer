@@ -10,11 +10,18 @@ import SwiftUI
 struct QuestionnaireListView: View {
     @State var questionnaires: [Questionnaire]
     @EnvironmentObject var navCoord: NavigationCoordinator
+    @EnvironmentObject var provider: QuestionnaireListProvider
     
     var body: some View {
-        List(questionnaires) { questionnaire in
-            NavigationLink(value: PathForView.questionnaire(questionnaire)) {
-                QuestionnaireView.Cell(questionnaire: questionnaire)
+        List {
+            ForEach(questionnaires) { questionnaire in
+                NavigationLink(pfView: .questionnaire(questionnaire)) {
+                    QuestionnaireView.Cell(questionnaire: questionnaire)
+                }
+            }
+            .onDelete { indexSet in
+                try? provider.delete(indexSet: indexSet)
+                
             }
         }
         .navigationTitle("questionnaires")

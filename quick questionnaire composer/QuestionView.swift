@@ -21,7 +21,7 @@ struct QuestionView: View {
             }
             
             Section("possible answers") {
-                ForEach($question.possibleAnswers) { ans in
+                ForEach(question.possibleAnswers) { ans in
                     nav(answer: ans)
                 }
             }
@@ -51,16 +51,19 @@ struct QuestionView: View {
 
     }
     
-    func nav(answer: Binding<PossibleAnswer>) -> some View {
-        Button {
-//            PossibleAnswerView(answer: answer)
-            
-        } label: {
+    func nav(answer: PossibleAnswer) -> some View {
+        NavigationLink(pfView: .possibleAnswer(answer)) {
             PossibleAnswerView.Cell(answer: answer, correct: question.correctAnswersID.contains(answer.id))
         }
+//        Button {
+//            navCoord.add(destination: .possibleAnswer(answer))
+//            
+//        } label: {
+//            PossibleAnswerView.Cell(answer: answer, correct: question.correctAnswersID.contains(answer.id))
+//        }
         .swipeActions(allowsFullSwipe: false) {
             Button(role: .destructive) {
-                if let index = question.possibleAnswers.firstIndex(where: { $0.id == answer.wrappedValue.id }) {
+                if let index = question.possibleAnswers.firstIndex(where: { $0.id == answer.id }) {
                     question.possibleAnswers.remove(at: index)
                 }
             } label: {
