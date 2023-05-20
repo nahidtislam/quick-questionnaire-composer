@@ -12,7 +12,7 @@ struct QuestionnaireView: View {
     
     @State private var nameNeedingToBeSet = false
     
-    @EnvironmentObject var provider: QuestionnaireListProvider
+    @EnvironmentObject var provider: ListProvider
     @EnvironmentObject var navCoord: NavigationCoordinator
     
     var body: some View {
@@ -48,6 +48,13 @@ struct QuestionnaireView: View {
         .navigationTitle(questionnaire.name)
         .onAppear {
             nameNeedingToBeSet = questionnaire.name.count == 0
+            questionnaire.questions.forEach { question in
+                if let new = provider.pull(uuid: question.id) as? Question,
+                   (new.title != question.title || new.subtitle == question.subtitle || question.possibleAnswers.count != new.possibleAnswers.count) {
+                    let qIndex = questionnaire.questions.firstIndex(of: question)!
+                    questionnaire.questions[qIndex] = new
+                }
+            }
         }
         .onDisappear {
             if questionnaire.name.count > 0 {
@@ -79,7 +86,7 @@ struct QuestionnaireView_Previews: PreviewProvider {
         
         var body: some View {
             QuestionnaireView(questionnaire: questionnaire)
-                .environmentObject(QuestionnaireListProvider(questionnaire: [questionnaire]))
+                .environmentObject(ListProvider(questionnaire: [questionnaire]))
                 .environmentObject(NavigationCoordinator())
         }
         

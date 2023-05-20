@@ -23,7 +23,7 @@
 		25DBF2892A1414A100A4D69C /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2882A1414A100A4D69C /* NavigationCoordinator.swift */; };
 		25DBF28B2A142D0700A4D69C /* PathForView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28A2A142D0700A4D69C /* PathForView.swift */; };
 		25DBF28D2A14BF7200A4D69C /* QuestionView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */; };
-		25DBF28F2A14BFC700A4D69C /* QuestionnaireListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */; };
+		25DBF28F2A14BFC700A4D69C /* ListProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF28E2A14BFC700A4D69C /* ListProvider.swift */; };
 		25DBF2912A1535D500A4D69C /* ExampleUserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2902A1535D500A4D69C /* ExampleUserData.swift */; };
 		25DBF2932A153BB500A4D69C /* QuestionnaireView+Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */; };
 		25DBF2952A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DBF2942A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift */; };
@@ -54,7 +54,7 @@
 		25DBF2882A1414A100A4D69C /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
 		25DBF28A2A142D0700A4D69C /* PathForView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathForView.swift; sourceTree = "<group>"; };
 		25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuestionView+Cell.swift"; sourceTree = "<group>"; };
-		25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionnaireListProvider.swift; sourceTree = "<group>"; };
+		25DBF28E2A14BFC700A4D69C /* ListProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListProvider.swift; sourceTree = "<group>"; };
 		25DBF2902A1535D500A4D69C /* ExampleUserData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleUserData.swift; sourceTree = "<group>"; };
 		25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuestionnaireView+Cell.swift"; sourceTree = "<group>"; };
 		25DBF2942A15442400A4D69C /* Array+IndexFromIdentifiableElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+IndexFromIdentifiableElement.swift"; sourceTree = "<group>"; };
@@ -107,7 +107,7 @@
 				25DBF28A2A142D0700A4D69C /* PathForView.swift */,
 				25FFB04A2A118A3400453651 /* WelcomeView.swift */,
 				25FFB0482A118A0600453651 /* Questionnaire.swift */,
-				25DBF28E2A14BFC700A4D69C /* QuestionnaireListProvider.swift */,
+				25DBF28E2A14BFC700A4D69C /* ListProvider.swift */,
 				2539A6DB2A1193D9007CF516 /* QuestionnaireView.swift */,
 				25DBF2922A153BB500A4D69C /* QuestionnaireView+Cell.swift */,
 				25DBF28C2A14BF7200A4D69C /* QuestionView+Cell.swift */,
@@ -221,7 +221,7 @@
 				25DBF2932A153BB500A4D69C /* QuestionnaireView+Cell.swift in Sources */,
 				25C88DF929A27DDC0073F412 /* Color+HexStringInit.swift in Sources */,
 				25F0212C2A12227C008620F5 /* QuestionnaireListView.swift in Sources */,
-				25DBF28F2A14BFC700A4D69C /* QuestionnaireListProvider.swift in Sources */,
+				25DBF28F2A14BFC700A4D69C /* ListProvider.swift in Sources */,
 				25C88DE429A24E8B0073F412 /* QuickQuestionnaireComposerApp.swift in Sources */,
 				2539A6DE2A119736007CF516 /* QuestionView.swift in Sources */,
 				2539A6DC2A1193D9007CF516 /* QuestionnaireView.swift in Sources */,

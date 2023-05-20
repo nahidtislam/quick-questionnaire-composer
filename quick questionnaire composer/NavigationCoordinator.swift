@@ -15,6 +15,10 @@ final class NavigationCoordinator: ObservableObject {
         navNodes.append(destination)
     }
     
+    var uuidFlow: [UUID] {
+        navNodes.map { $0.uuidForContainingData }
+    }
+    
     func goBack(by steps: Int = 1) {
         navNodes.removeLast(steps)
     }

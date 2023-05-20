@@ -1,5 +1,5 @@
 //
-//  QuestionnaireListProvider.swift
+//  ListProvider.swift
 //  quick questionnaire composer
 //
 //  Created by Nahid Islam on 17/05/2023.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class QuestionnaireListProvider: ObservableObject {
+class ListProvider: ObservableObject {
     
     @Published var questionnaires: [Questionnaire]
     
@@ -24,7 +24,7 @@ class QuestionnaireListProvider: ObservableObject {
     }
     
     var questionnaireFolder: URL {
-        QuestionnaireListProvider.docFolder
+        ListProvider.docFolder
             .appending(path: "questionnaires", directoryHint: .isDirectory)
     }
     
@@ -53,19 +53,63 @@ class QuestionnaireListProvider: ObservableObject {
     }
     
     func delete(questionnaire: Questionnaire) throws {
-        let index = questionnaires.index(using: questionnaire)
-        let singularSet = IndexSet([index])
+        let path = path(for: questionnaire)
+        try FileManager.default.removeItem(at: path)
+        questionnaires.remove(at: questionnaires.firstIndex(of: questionnaire)!)
+    }
+    
+    func pull(uuid: UUID) -> (any HierarchableData)? {
+        for questionnaire in questionnaires {
+            if questionnaire.id == uuid {
+                return questionnaire
+            } else {
+                for question in questionnaire.questions {
+                    if question.id == uuid {
+                        return question
+                    } else {
+                        for answer in question.possibleAnswers {
+                            if answer.id == uuid {
+                                return answer
+                            }
+                        }
+                    }
+                }
+            }
+        }
         
-        try delete(indexSet: singularSet)
+        return nil
+    }
+    
+    @discardableResult
+    func add(possibleAnswer: PossibleAnswer, to quetion: Question) -> (questionnaireIndex: Int, questionIndex: Int, possibleAnswer: Int)  {
+        let questionnaireIndex = questionnaires.firstIndex(where: { $0.questions.contains(where: { $0.id == quetion.id}) })!
+        let questionIndex = questionnaires[questionnaireIndex].questions.firstIndex(where: { $0.id == quetion.id })!
+        
+        questionnaires[questionnaireIndex].questions[questionIndex].possibleAnswers.append(possibleAnswer)
+        
+        let paCount = questionnaires[questionnaireIndex].questions[questionIndex].possibleAnswers.count - 1
+        
+        return (questionnaireIndex, questionIndex, paCount)
+    }
+    
+    private func path(for questionnaire: Questionnaire) -> URL {
+        questionnaireFolder
+            .appendingPathComponent(questionnaire.name, conformingTo: .json)
+    }
+    
+    func delete(atIndex index: Int) throws {
+        let path = path(for: questionnaires[index])
+        try FileManager.default.removeItem(at: path)
+        questionnaires.remove(at: index)
     }
     
     func delete(indexSet: IndexSet) throws {
         let fm = FileManager.default
-        questionnaires.remove(atOffsets: indexSet)
         indexSet.forEach { i in
             let p = questionnaireFolder.appendingPathComponent(questionnaires[i].name, conformingTo: .json)
             try? fm.removeItem(at: p)
         }
+        questionnaires.remove(atOffsets: indexSet)
     }
     
     func apply(question: Question) throws {
@@ -82,6 +126,22 @@ class QuestionnaireListProvider: ObservableObject {
         
         questionnaires[questionnaireIndex].questions[questionIndex] = question
         try save(questionnaire: questionnaires[questionnaireIndex])
+    }
+    
+    func apply(possibleAnswer answer: PossibleAnswer) {
+        let (questionnaireIndex, questionIndex, answerIndex): (Int, Int, Int) = {
+            for (i, questionnaire) in questionnaires.enumerated() {
+                for (j, lookingQuestion) in questionnaire.questions.enumerated() {
+                    for (k, lookingAnswer) in lookingQuestion.possibleAnswers.enumerated() {
+                        if lookingAnswer.id == answer.id {
+                            return (i, j, k)
+                        }
+                    }
+                }
+            }
+            fatalError("wat")
+        }()
+        questionnaires[questionnaireIndex].questions[questionIndex].possibleAnswers[answerIndex] = answer
     }
     
     func reload() throws {
@@ -106,14 +166,14 @@ class QuestionnaireListProvider: ObservableObject {
         self.questionnaires = questionnaires
     }
     
-    static func loadFromStorage() throws -> QuestionnaireListProvider {
-        let ouput = QuestionnaireListProvider.blank()
+    static func loadFromStorage() throws -> ListProvider {
+        let ouput = ListProvider.blank()
         try ouput.reload()
         
         return ouput
     }
     
-    static func blank() -> QuestionnaireListProvider {
+    static func blank() -> ListProvider {
         .init(questionnaire: [])
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WelcomeView: View {
     
-    @StateObject var provider = (try? QuestionnaireListProvider.loadFromStorage()) ?? .blank()
+    @StateObject var provider = (try? ListProvider.loadFromStorage()) ?? .blank()
     @StateObject private var navCoord = NavigationCoordinator()
     
     @State private var newQuestionnaire = Questionnaire(name: "", symbol: "", questions: [])

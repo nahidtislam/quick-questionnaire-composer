@@ -8,21 +8,23 @@
 import SwiftUI
 
 struct PossibleAnswerView: View {
-    @State var answer: PossibleAnswer
+    @Binding var answer: PossibleAnswer
     @State private var symbol = ""
+    
+    @EnvironmentObject var provider: ListProvider
     
     var body: some View {
         List {
             TextField("name", text: $answer.name)
-            ConditionalTextBox(name: "symbol", input: $answer.symbol)
-//            TextField("symbol", text: $symbol)
-//                .onChange(of: symbol) { newValue in
-//                    if newValue == "" {
-//                        self.answer.symbol = nil
-//                    } else {
-//                        answer.symbol = newValue
-//                    }
-//                }
+//            ConditionalTextBox(name: "symbol", input: $answer.symbol)
+            TextField("symbol", text: $symbol)
+                .onChange(of: symbol) { newValue in
+                    if newValue == "" {
+                        self.answer.symbol = nil
+                    } else {
+                        answer.symbol = newValue
+                    }
+                }
         }
     }
 }
@@ -32,8 +34,9 @@ struct PossibleAnswerView_Previews: PreviewProvider {
         @State private var answer = PossibleAnswer(name: "example", symbol: "")
         
         var body: some View {
-            PossibleAnswerView(answer: answer)
+            PossibleAnswerView(answer: $answer)
                 .environmentObject(NavigationCoordinator())
+                .environmentObject(ListProvider.blank())
         }
     }
     

@@ -10,7 +10,7 @@ import SwiftUI
 struct QuestionnaireListView: View {
     @State var questionnaires: [Questionnaire]
     @EnvironmentObject var navCoord: NavigationCoordinator
-    @EnvironmentObject var provider: QuestionnaireListProvider
+    @EnvironmentObject var provider: ListProvider
     
     var body: some View {
         List {
@@ -21,7 +21,9 @@ struct QuestionnaireListView: View {
             }
             .onDelete { indexSet in
                 try? provider.delete(indexSet: indexSet)
-                
+                withAnimation {
+                    questionnaires = provider.questionnaires
+                }
             }
         }
         .navigationTitle("questionnaires")
@@ -37,7 +39,7 @@ struct QuestionnaireListView_Previews: PreviewProvider {
             NavigationStack {
                 QuestionnaireListView(questionnaires: list)
                     .environmentObject(NavigationCoordinator())
-                    .environmentObject(QuestionnaireListProvider.blank())
+                    .environmentObject(ListProvider.blank())
             }
         }
         

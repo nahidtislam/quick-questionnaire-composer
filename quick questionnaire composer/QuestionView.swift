@@ -11,7 +11,7 @@ struct QuestionView: View {
     @State var question: Question
     
     @EnvironmentObject var navCoord: NavigationCoordinator
-    @EnvironmentObject var provider: QuestionnaireListProvider
+    @EnvironmentObject var provider: ListProvider
     
     var body: some View {
         List {
@@ -21,15 +21,19 @@ struct QuestionView: View {
             }
             
             Section("possible answers") {
-                ForEach(question.possibleAnswers) { ans in
-                    nav(answer: ans)
+                ForEach($question.possibleAnswers) { ans in
+//                    nav(answer: ans)
+                    PossibleAnswerView.Cell(answer: ans.wrappedValue, correct: question.correctAnswersID.contains(ans.id))
                 }
             }
             
             Button("new answer") {
                 let answer = PossibleAnswer(name: "")
+//                let index = navCoord.navNodes[0]
+                
                 question.possibleAnswers.append(answer)
-                navCoord.add(destination: .possibleAnswer(answer))
+                let index = provider.add(possibleAnswer: answer, to: question)
+//                navCoord.add(destination: .possibleAnswer(answer))
             }
             
             HStack {
@@ -44,49 +48,51 @@ struct QuestionView: View {
 //        }
         .navigationDestination(for: PathForView.self) { $0 }
         .onDisappear {
-            if Question.validate(question: question) {
+//            if Question.validate(question: question) {
                 try? provider.apply(question: question)
+//            }
+        }
+        .onAppear {
+            question.possibleAnswers.forEach { answer in
+                if let new = provider.pull(uuid: answer.id) as? PossibleAnswer, new.name != answer.name {
+                    let answerIndex = question.possibleAnswers.firstIndex(of: answer)!
+                    question.possibleAnswers[answerIndex] = new
+                }
             }
         }
 
     }
     
-    func nav(answer: PossibleAnswer) -> some View {
-        NavigationLink(pfView: .possibleAnswer(answer)) {
-            PossibleAnswerView.Cell(answer: answer, correct: question.correctAnswersID.contains(answer.id))
-        }
-//        Button {
-//            navCoord.add(destination: .possibleAnswer(answer))
-//            
-//        } label: {
-//            PossibleAnswerView.Cell(answer: answer, correct: question.correctAnswersID.contains(answer.id))
+//    func nav(answer: Binding<PossibleAnswer>) -> some View {
+//        NavigationLink(pfView: .possibleAnswer(answer)) {
+//            PossibleAnswerView.Cell(answer: answer.wrappedValue, correct: question.correctAnswersID.contains(answer.id))
 //        }
-        .swipeActions(allowsFullSwipe: false) {
-            Button(role: .destructive) {
-                if let index = question.possibleAnswers.firstIndex(where: { $0.id == answer.id }) {
-                    question.possibleAnswers.remove(at: index)
-                }
-            } label: {
-                Label("delete", systemImage: "trash")
-            }
-        }
-        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-            Button {
-                if !question.correctAnswersID.insert(answer.id).inserted {
-                    question.correctAnswersID.remove(answer.id)
-                }
-            } label: {
-                if question.correctAnswersID.contains(answer.id) {
-                    Label("make incorrect", systemImage: "x.circle.fill")
-                        .foregroundColor(.blue)
-                } else {
-                    Label("make correct", systemImage: "checkmark.circle")
-                        .foregroundColor(.green)
-                }
-            }
-        }
-
-    }
+//        .swipeActions(allowsFullSwipe: false) {
+//            Button(role: .destructive) {
+//                if let index = question.possibleAnswers.firstIndex(where: { $0.id == answer.id }) {
+//                    question.possibleAnswers.remove(at: index)
+//                }
+//            } label: {
+//                Label("delete", systemImage: "trash")
+//            }
+//        }
+//        .swipeActions(edge: .leading, allowsFullSwipe: true) {
+//            Button {
+//                if !question.correctAnswersID.insert(answer.id).inserted {
+//                    question.correctAnswersID.remove(answer.id)
+//                }
+//            } label: {
+//                if question.correctAnswersID.contains(answer.id) {
+//                    Label("make incorrect", systemImage: "x.circle.fill")
+//                        .foregroundColor(.blue)
+//                } else {
+//                    Label("make correct", systemImage: "checkmark.circle")
+//                        .foregroundColor(.green)
+//                }
+//            }
+//        }
+//
+//    }
 }
 
 struct QuestionView_Previews: PreviewProvider {
@@ -96,7 +102,7 @@ struct QuestionView_Previews: PreviewProvider {
         var body: some View {
             QuestionView(question: question)
                 .environmentObject(NavigationCoordinator())
-                .environmentObject(QuestionnaireListProvider(questionnaire: [.init(name: "eg", questions: [question])]))
+                .environmentObject(ListProvider(questionnaire: [.init(name: "eg", questions: [question])]))
         }
     }
     
